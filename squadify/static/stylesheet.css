@@ -14,12 +14,22 @@
 
 .nav-link:hover {
     color: #29ff74 !important;
+    transition: .5s;
 }
 
-.nav-item #sign-in-button {
+.nav-item #sign-in-button, .nav-item #logout-button {
     color: rgba(255,255,255,.9) !important;
     margin-left: 5px;
     margin-right: 5px;
+    text-decoration: none !important
+}
+
+.nav-item #sign-in-button:hover, .nav-item #logout-button:hover {
+    color: rgb(255,255,255) !important;
+}
+
+a, a:hover, a:focus{
+    text-decoration: none;
 }
 
 #logged-out-about {
@@ -32,9 +42,6 @@
     margin-right: 35px;
 }
 
-.nav-item #sign-in-button:hover {
-    color: rgb(255,255,255) !important;
-}
 
 #upper-bar {
     padding-right: 20px;
