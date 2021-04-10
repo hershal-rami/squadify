@@ -47,7 +47,9 @@
                             <a href="/playlists" id ="playlists-button" class="nav-link">Playlists</a>
                         </li>
                         <li class="nav-item">
-                            <button type="button" id="logout-button" class="nav-link d-lg-block nav-login btn-round btn btn-outline-success">Sign Out</button>
+                            <a href="/sign_out">
+                                <button type="button" id="logout-button" class="nav-link d-lg-block nav-login btn-round btn btn-outline-success">Sign Out</button>
+                            </a>
                         </li>
                     {% else %}
                         <li class="nav-item">
@@ -55,7 +57,9 @@
                         </li>
 
                         <li class="nav-item">
-                            <button type="button" id="sign-in-button" class="nav-link d-lg-block nav-login btn-round btn btn-outline-success">Sign In</button>
+                            <a href="{{ auth_url }}">
+                                <button type="button" id="sign-in-button" class="nav-link d-lg-block nav-login btn-round btn btn-outline-success">Sign In</button>
+                            </a>
                         </li>
                     {% endif %}
                 </ul>

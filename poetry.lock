@@ -21,6 +21,14 @@ tests = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)"
 tests_no_zope = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "six"]
 
 [[package]]
+name = "cachelib"
+version = "0.1.1"
+description = "A collection of cache libraries in the same API interface."
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "certifi"
 version = "2020.12.5"
 description = "Python package for providing Mozilla's CA Bundle."
@@ -111,6 +119,18 @@ Flask = ">=1.1.2"
 Flask-WTF = ">=0.14.3"
 mongoengine = ">=0.20"
 WTForms = {version = ">=2.3.1", extras = ["email"]}
+
+[[package]]
+name = "flask-session"
+version = "0.3.2"
+description = "Adds server-side session support to your Flask application"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+cachelib = "*"
+Flask = ">=0.8"
 
 [[package]]
 name = "flask-wtf"
@@ -396,7 +416,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pyt
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6"
-content-hash = "d52d946e9a1f35b4740d6237c6335cef16c3417f9274a68fef1ff5262211c41f"
+content-hash = "78d1546b9d577b34f8f2985f12f3f3c26089f16757721dd94679f38414fd873b"
 
 [metadata.files]
 atomicwrites = [
@@ -406,6 +426,10 @@ atomicwrites = [
 attrs = [
     {file = "attrs-20.3.0-py2.py3-none-any.whl", hash = "sha256:31b2eced602aa8423c2aea9c76a724617ed67cf9513173fd3a4f03e3a929c7e6"},
     {file = "attrs-20.3.0.tar.gz", hash = "sha256:832aa3cde19744e49938b91fea06d69ecb9e649c93ba974535d08ad92164f700"},
+]
+cachelib = [
+    {file = "cachelib-0.1.1-py3-none-any.whl", hash = "sha256:7df6e05b8dfccdeb869e171575580e5606cf1e82a166633b3cb406bc4f113fd0"},
+    {file = "cachelib-0.1.1.tar.gz", hash = "sha256:47e95a67d68c729cbad63285a790a06f0e0d27d71624c6e44c1ec3456bb4476f"},
 ]
 certifi = [
     {file = "certifi-2020.12.5-py2.py3-none-any.whl", hash = "sha256:719a74fb9e33b9bd44cc7f3a8d94bc35e4049deebe19ba7d8e108280cfd59830"},
@@ -438,6 +462,10 @@ flask = [
 flask-mongoengine = [
     {file = "flask-mongoengine-1.0.0.tar.gz", hash = "sha256:ce68726d2be8d88006e88f17e4be3b7ad07c79ca8dedb60653d3dab5d9485840"},
     {file = "flask_mongoengine-1.0.0-py3-none-any.whl", hash = "sha256:2db13140ce7f61a935e75268190450d5ecc9b60a7310fd289f9511835aa105d4"},
+]
+flask-session = [
+    {file = "Flask-Session-0.3.2.tar.gz", hash = "sha256:0768e2bbf06f963ec1aa711bde7aa32dc39ff70f89b495d6db687d899eae4423"},
+    {file = "Flask_Session-0.3.2-py2.py3-none-any.whl", hash = "sha256:d75eb27f918421ccaf1ba86353348b84ecf07fc64ce40ff7ad05a190c4bf50f1"},
 ]
 flask-wtf = [
     {file = "Flask-WTF-0.14.3.tar.gz", hash = "sha256:d417e3a0008b5ba583da1763e4db0f55a1269d9dd91dcc3eb3c026d3c5dbd720"},
