@@ -1,5 +1,6 @@
 __version__ = "0.1.0"
 
+from functools import wraps
 import os
 from flask import Flask, render_template, session, request, redirect
 from flask_session import Session
@@ -26,7 +27,24 @@ def session_cache_path():
 
 
 client = MongoClient("localhost", 27017)
-db = client['squads']['squads']
+db = client["squads"]["squads"]
+
+
+def authenticate(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        cache_handler = spotipy.cache_handler.CacheFileHandler(
+            cache_path=session_cache_path()
+        )
+        auth_manager = spotipy.oauth2.SpotifyOAuth(cache_handler=cache_handler)
+        if not auth_manager.validate_token(cache_handler.get_cached_token()):
+            return redirect("/")
+        else:
+            sp = spotipy.Spotify(auth_manager=auth_manager)
+            kwargs["sp"] = sp
+            return f(*args, **kwargs)
+
+    return wrapper
 
 
 @app.route("/")
@@ -71,77 +89,67 @@ def sign_out():
 
 
 @app.route("/about")
-def view_about():
-    cache_handler = spotipy.cache_handler.CacheFileHandler(
-        cache_path=session_cache_path()
-    )
-    auth_manager = spotipy.oauth2.SpotifyOAuth(cache_handler=cache_handler)
-    if not auth_manager.validate_token(cache_handler.get_cached_token()):
-        return redirect("/")
+@authenticate
+def view_about(sp):
     return render_template("about.html", logged_in=True)
 
 
 # Viewing existing squads
 @app.route("/squads")
-def view_squads():
-    cache_handler = spotipy.cache_handler.CacheFileHandler(
-        cache_path=session_cache_path()
+@authenticate
+def view_squads(sp):
+    return render_template(
+        "squads.html", logged_in=True, squads_list=db.find({"user": sp.me()["id"]})
     )
-    auth_manager = spotipy.oauth2.SpotifyOAuth(cache_handler=cache_handler)
-    if not auth_manager.validate_token(cache_handler.get_cached_token()):
-        return redirect("/")
-    sp = spotipy.Spotify(auth_manager=auth_manager)
-    return render_template("squads.html", logged_in=True, squads_list=db.find({"user": sp.me()['id']}))
+
 
 # Viewing specific squad's playlists
 @app.route("/squads/<uuid:squad_id>")
-def view_squad(squad_id):
-    cache_handler = spotipy.cache_handler.CacheFileHandler(
-        cache_path=session_cache_path()
-    )
-    auth_manager = spotipy.oauth2.SpotifyOAuth(cache_handler=cache_handler)
-    if not auth_manager.validate_token(cache_handler.get_cached_token()):
-        return redirect('/')
-    
+@authenticate
+def view_squad(squad_id, sp):
     squad = db.find_one({"squad_id": str(squad_id)})
     return render_template("squad.html", logged_in=True, squad=squad)
 
+
 class SquadForm(FlaskForm):
-   squad_name = StringField('Squad Name:')
+    squad_name = StringField("Squad Name:")
+
 
 # Create new squad
 @app.route("/squads/new", methods=["GET", "POST"])
-def new_squad():
-    cache_handler = spotipy.cache_handler.CacheFileHandler(
-        cache_path=session_cache_path()
-    )
-    auth_manager = spotipy.oauth2.SpotifyOAuth(cache_handler=cache_handler)
-    if not auth_manager.validate_token(cache_handler.get_cached_token()):
-        return redirect("/")
-
+@authenticate
+def new_squad(sp):
     squad_form = SquadForm()
 
     if squad_form.validate_on_submit():
         squad_name = squad_form.squad_name.data
-        #generate an id, get user id, make playlists empty
+        # generate an id, get user id, make playlists empty
         while True:
             squad_id = str(uuid.uuid4())
             if not db.find_one({"squad_id": squad_id}):
                 break
-        sp = spotipy.Spotify(auth_manager=auth_manager)
-        db.insert_one(dict(user=sp.me()['id'], squad_name=squad_name, squad_id=squad_id, playlists=[]))
-        return redirect(f'/squads/{squad_id}')
+        db.insert_one(
+            dict(
+                user=sp.me()["id"],
+                squad_name=squad_name,
+                squad_id=squad_id,
+                playlists=[],
+            )
+        )
+        return redirect(f"/squads/{squad_id}")
 
     return render_template("add-squad.html", logged_in=True, squad_form=squad_form)
 
 
 # Add playlist to existing squad
 @app.route("/squads/<uuid:squad_id>/add", methods=["GET", "POST"])
-def add_to_squad(squad):
+@authenticate
+def add_to_squad(squad_id, sp):
     return "Hello, World!"
 
 
 # Public new playlist for squad
 @app.route("/squads/finish", methods=["GET", "POST"])
-def finish_squad():
+@authenticate
+def finish_squad(sp):
     return "Hello, World!"
