@@ -2,16 +2,16 @@ import random
 
 # placehold vars
 member_num = 4 # number of squad members
-target_len = 30 # can make a fn reletive to member_num
-thresh = 3 #target_len/(2*member_num) # threshold size for each person
-playlist = [] # final playlist
+target_len = 6 # can make a fn reletive to member_num
+thresh = 0 #target_len/(2*member_num) # threshold size for each person
+final_playlist = [] # final playlist
 members = []
 
 class Member:
     def __init__(self, name, member_num):
         self.name = name
         self.count = 0
-        self.songs = [[]] * (member_num + 1)
+        self.songs = [[] for _ in range(member_num + 1)]
 
 class Playlist:
     def __init__(self, name, tracks):
@@ -27,7 +27,7 @@ def playlists_to_members(playlists):
                 tracks[track][0] += 1
                 tracks[track][1].append(playlist.name)
             else:
-                tracks[track] = [0, [playlist.name]]
+                tracks[track] = [1, [playlist.name]]
     
     # Map the member names to members and populate their songs list
     members = {playlist.name : Member(playlist.name, len(playlists)) for playlist in playlists}
@@ -47,10 +47,10 @@ def playlists_to_members(playlists):
 
     return members
 
-Nick = Playlist("Nick", ["Kickstarts", "Fever Dream", "Kids"])
-Thomas = Playlist("Thomas", ["Kickstarts", "Fever Dream", "Dear Maria", "Kids"])
+Nick = Playlist("Nick", ["Kickstarts", "Kids", "Ichidaiji", "GOAT", "Loyola Fight Song"])
+Thomas = Playlist("Thomas", ["Kickstarts", "Fever Dream", "Dear Maria", "Kids", "Ichidaiji", "GOAT", "Loyola Fight Song"])
 Hershal = Playlist("Hershal", ["High Hopes", "Fever Dream", "Dear Maria", "Kids"])
-Justin = Playlist("Justin", ["High Hopes", "Dear Maria", "Kids"])
+Justin = Playlist("Justin", ["High Hopes", "Dear Maria", "Kids", "Fever Dream"])
 playlists = [Nick, Thomas, Justin, Hershal]
 members = playlists_to_members(playlists)
 
@@ -85,7 +85,7 @@ def smallest_count():
 # removes a song from all members, increments count
 def remove(song, level):
     rem_list = []
-    playlist.append(song)
+    final_playlist.append(song)
     for i, member in enumerate(members, start=0):
         if len(member.songs) > level:
             if song in member.songs[level]:
@@ -124,9 +124,34 @@ for member in members:
 for i in rem_list:
     members.pop(i)
 
-# adds songs till each member meets the threshold
+# step1: adds songs till each member meets the threshold
 while not thresh_met():
     member = smallest_count()
     remove(member.songs[-1][0], len(member.songs) - 1)
 
-print(playlist)
+# step2: add most popular songs until reachest smalles level of songs which will be added
+step2 = True
+curr_level = member_num 
+while step2:
+    songs_at_level = 0
+    for member in members:
+        if len(member.songs) - 1 == curr_level:
+            songs_at_level += len(member.songs[curr_level])
+    songs_at_level /= curr_level
+    if songs_at_level <= target_len - len(final_playlist):
+        for member in members:
+            while len(member.songs) - 1 == curr_level:
+                remove(member.songs[curr_level][0], curr_level)
+        curr_level -= 1
+    else:
+        step2 = False
+    if curr_level < 2:
+        step2 = False
+
+#step3: addes songs to lowest level balanced 
+if len(members) > 0:
+    while target_len - len(final_playlist) > 0:
+        member = smallest_count()
+        remove(member.songs[-1][0], curr_level)
+
+print(final_playlist)
