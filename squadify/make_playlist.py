@@ -1,11 +1,12 @@
 import random
 
 # placehold vars
-member_num = 4 # number of squad members
-target_len = 30 # can make a fn reletive to member_num
-thresh = 3 #target_len/(2*member_num) # threshold size for each person
-playlist = [] # final playlist
+member_num = 4  # number of squad members
+target_len = 30  # can make a fn reletive to member_num
+thresh = 3  # target_len/(2*member_num) # threshold size for each person
+playlist = []  # final playlist
 members = []
+
 
 class Member:
     def __init__(self, name, member_num):
@@ -13,10 +14,12 @@ class Member:
         self.count = 0
         self.songs = [[]] * (member_num + 1)
 
+
 class Playlist:
     def __init__(self, name, tracks):
         self.name = name
         self.tracks = tracks
+
 
 def playlists_to_members(playlists):
     # Compute track freqencies
@@ -28,14 +31,16 @@ def playlists_to_members(playlists):
                 tracks[track][1].append(playlist.name)
             else:
                 tracks[track] = [0, [playlist.name]]
-    
+
     # Map the member names to members and populate their songs list
-    members = {playlist.name : Member(playlist.name, len(playlists)) for playlist in playlists}
+    members = {
+        playlist.name: Member(playlist.name, len(playlists)) for playlist in playlists
+    }
     for track, values in tracks.items():
         level, listeners = values
         for listener in listeners:
             members[listener].songs[level].append(track)
-    
+
     # Convert dictionary to list
     members = list(members.values())
 
@@ -46,6 +51,7 @@ def playlists_to_members(playlists):
     random.shuffle(members)
 
     return members
+
 
 Nick = Playlist("Nick", ["Kickstarts", "Fever Dream", "Kids"])
 Thomas = Playlist("Thomas", ["Kickstarts", "Fever Dream", "Dear Maria", "Kids"])
@@ -70,7 +76,8 @@ def thresh_met():
     for member in members:
         if member.count < thresh:
             ret = False
-    return ret 
+    return ret
+
 
 # returns the member with smallest count
 def smallest_count():
@@ -80,7 +87,8 @@ def smallest_count():
         if member.count < smallest_count:
             smallest_member = member
             smallest_count = member.count
-    return smallest_member 
+    return smallest_member
+
 
 # removes a song from all members, increments count
 def remove(song, level):
@@ -106,7 +114,7 @@ def remove(song, level):
 
 
 # also! edge case if all songs are gone, just stops code...
-#probably dont need to code anything since and for each member loops will just do nothing
+# probably dont need to code anything since and for each member loops will just do nothing
 
 # main
 
@@ -119,7 +127,7 @@ for member in members:
         level -= 1
     if level == 1:
         rem_list.insert(0, level)
-    
+
 # removes members without any songs left
 for i in rem_list:
     members.pop(i)

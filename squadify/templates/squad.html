@@ -5,9 +5,13 @@
     <h2 class="squad-leader">Squad Leader: {{squad.user}}</h2>
     <div class="playlists-group">
         {% for playlist in squad.playlists %}
-            <li><h2 class="playlist-name">Name: {{playlist.name}}</h2> <a href="{{playlist.url}}" class="playlist-link">Playlist: {{playlist.url}}</h2>></li>
+        <li>
+            <h2 class="playlist-name">Name: {{playlist.name}}</h2> <a href="{{playlist.url}}"
+                class="playlist-link">Playlist: {{playlist.url}}</h2>>
+        </li>
         {% endfor %}
     </div>
-    <button type="button" id="new-playlist-button" class="nav-link d-lg-block nav-login btn-round btn btn-outline-success">Create New Playlist</button>
+    <button type="button" id="new-playlist-button"
+        class="nav-link d-lg-block nav-login btn-round btn btn-outline-success">Create New Playlist</button>
 </div>
 {% endblock %}
