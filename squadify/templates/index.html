@@ -11,7 +11,7 @@
     <link rel="icon" href="{{url_for('static', filename='Squadify-Logo-Small-Solo.png')}}">
 </head>
 
-<body class="h-screen mx-auto container flex flex-col bg-gray-800 space-y-8">
+<body class="h-screen mx-auto container flex flex-col bg-gray-800">
     <div class="my-8 flex items-center">
         <a href="/">
             <img class="h-36" src="{{url_for('static', filename='Squadify-Logo-Full-Transparent.png')}}">
@@ -23,12 +23,12 @@
                 href="/about">About</a>
             <a class="text-4xl transitions duration-300 ease-in-out text-white hover:text-green-500"
                 href="/squads">Squads</a>
-            <a class="px-6 py-4 rounded-md border-2 border-green-500 text-4xl transitions duration-300 ease-in-out text-white hover:text-green-500"
+            <a class="px-6 py-4 rounded-md border-2 border-green-500 hover:border-green-400 text-4xl transitions duration-300 ease-in-out text-white hover:text-green-500"
                 href="/sign_out">Sign Out</a>
             {% else %}
             <a class="text-4xl transitions duration-300 ease-in-out text-white hover:text-green-500"
                 href="/about">About</a>
-            <a class="px-6 py-4 rounded-md border-2 border-green-500 text-4xl transitions duration-300 ease-in-out text-white hover:text-green-500"
+            <a class="px-6 py-4 rounded-md border-2 border-green-500 hover:border-green-400 text-4xl transitions duration-300 ease-in-out text-white hover:text-green-500"
                 href="{{ auth_url }}">Sign In</a>
             {% endif %}
         </div>
@@ -36,7 +36,7 @@
 
     <div class="flex-grow flex flex-col items-center space-y-16">
         {% block content %}
-        <p class="text-3xl text-white">
+        <p class="mt-16 text-3xl text-white">
             ipsum dolor sit amet, consectetur adipiscing elit. Aliquam sagittis
             imperdiet
             tellus, sit amet congue augue
@@ -51,16 +51,12 @@
             tincidunt ac. Cras libero purus, rhoncus sit amet dictum sed, facilisis in metus. Nulla dapibus lobortis
             felis id gravida.
             Suspendisse commodo nisi et felis pulvinar, et dapibus ex feugiat</p>
+
         {% if logged_in %}
-        <a href="/squads/new">
-            {% else %}
-            <a href="{{ auth_url }}">
-                {% endif %}
-                <button
-                    class="w-2/12 px-6 py-6 rounded-md border-2 border-green-500 text-4xl transitions duration-300 ease-in-out text-white hover:text-green-500">Squad
-                    Up!</button>
-            </a>
-            {% endblock %}
+        <a class="w-2/12 px-6 py-6 transform transition-transform hover:scale-110 rounded-md border-2 hover:border-green-400 border-green-500 text-center text-4xl transitions duration-300 ease-in-out text-white hover:text-green-500"
+            href="/squads/new">Squad Up!</a>
+        {% endif %}
+        {% endblock %}
     </div>
 
     <div class="self-end mx-12 my-8 space-x-8">
