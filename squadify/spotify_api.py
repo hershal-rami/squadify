@@ -2,7 +2,7 @@ import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 import math
 
-SCOPE = 'user-library-read'
+SCOPE = 'playlist-modify-public'
 TRACK_PULL_LIMIT = 100
 
 sp = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=SCOPE))
@@ -11,6 +11,7 @@ class Track:
     def __init__(self, track):
         self.title = track['name']
         self.artists = frozenset([artist['name'] for artist in track['artists']])
+        self.id = track['id']
     
     def __hash__(self):
         return hash((self.title, self.artists))
@@ -28,3 +29,8 @@ def get_tracks(playlist_link):
         playlist_items = sp.playlist_items(playlist_link, offset=i*TRACK_PULL_LIMIT)
         tracks.extend([Track(item['track']) for item in playlist_items['items']])
     return tracks
+
+def publish_squad_playlist(playlist):
+    user_id = sp.current_user()['id']
+    playlist_id = sp.user_playlist_create(user_id, "test_user_playlist_create")['id']
+    sp.user_playlist_add_tracks(user_id, playlist_id, [track.id for track in playlist])
