@@ -1,13 +1,21 @@
 {% extends "index.html" %}
 {% block content %}
-<div class="squad-main">
-    <h1 class="squad-header">{{squad.squad_name}}</h1>
-    <h2 class="squad-leader">Squad Leader: {{squad.user}}</h2>
-    <div class="playlists-group">
+<div class="flex flex-col items-center">
+    <p class="text-8xl font-bold bg-gradient-to-tr from-green-300 to-yellow-500 bg-clip-text text-transparent">
+        {{squad.squad_name}}
+    </p>
+    <p class="text-3xl font-bold text-green-500">
+        Squad Leader:
+    <p class="text-3xl font-bold text-green-500">
+        {{squad.user}}
+    </p>
+    <div>
         {% for playlist in squad.playlists %}
-            <li><h2 class="playlist-name">Name: {{playlist.name}}</h2> <a href="{{playlist.url}}" class="playlist-link">Playlist: {{playlist.url}}</h2>></li>
+        <li>
+            <p>Playlist: {{playlist.url}}</p>>
+        </li>
         {% endfor %}
     </div>
-    <button type="button" id="new-playlist-button" class="nav-link d-lg-block nav-login btn-round btn btn-outline-success">Add New Playlist</button>
+    <button class="p-5 rounded-md bg-green-300 text-3xl font-bold text-green-500">Add Your Playlist</button>
 </div>
 {% endblock %}
