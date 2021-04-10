@@ -1,21 +1,24 @@
 {% extends "index.html" %}
 {% block content %}
-<div class="flex flex-col items-center">
-    <p class="text-8xl font-bold bg-gradient-to-tr from-green-300 to-yellow-500 bg-clip-text text-transparent">
+<div class="flex flex-col items-center space-y-8">
+    <p class="text-8xl font-bold bg-gradient-to-tr from-green-600 to-yellow-400 bg-clip-text text-transparent">
         {{squad.squad_name}}
     </p>
-    <p class="text-3xl font-bold text-green-500">
-        Squad Leader:
-    <p class="text-3xl font-bold text-green-500">
-        {{squad.user}}
-    </p>
-    <div>
-        {% for playlist in squad.playlists %}
-        <li>
-            <p>Playlist: {{playlist.url}}</p>>
-        </li>
-        {% endfor %}
+    <div class="flex flex-col space-y-2">
+        <p class="text-3xl font-bold text-green-500">
+            Squad Leader:
+        <p class="text-3xl font-bold text-green-500">
+            {{squad.user}}
+        </p>
     </div>
-    <button class="p-5 rounded-md bg-green-300 text-3xl font-bold text-green-500">Add Your Playlist</button>
+    {% for playlist in squad.playlists %}
+    <li>
+        <p>Playlist: {{playlist.url}}</p>>
+    </li>
+    {% endfor %}
+    <button
+        class="px-6 py-6 transform transition-transform hover:scale-110 rounded-md border-2 hover:border-green-400 border-green-500 text-center text-4xl transitions duration-300 ease-in-out text-white hover:text-green-500">Add
+        Your Playlist!
+    </button>
 </div>
 {% endblock %}
