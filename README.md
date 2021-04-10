@@ -3,5 +3,6 @@ PARTY TIME
 !!!
 
 ## Building and Running
-1. `poetry install`
-2. `poetry run python squadify/squadify.py`
+1. `pip install poetry`
+2. `poetry install`
+3. `poetry run python squadify/squadify.py`
