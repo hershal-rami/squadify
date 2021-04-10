@@ -1,0 +1,41 @@
+.logo-image {
+    max-width: 400px;
+    max-height: 300px;
+    padding-left: 30 px;
+    padding-top: 5px;
+}
+
+.nav-link {
+    font-size: 1.75rem !important;
+    color: rgba(255,255,255,.9) !important;
+    margin-left: 8px;
+    margin-right: 8px;
+}
+
+.nav-link:hover {
+    color: #29ff74 !important;
+}
+
+.nav-item #sign-in-button {
+    color: rgba(255,255,255,.9) !important;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+#playlists-button {
+    margin-left: 0px;
+    margin-right: 35px;
+}
+
+.nav-item #sign-in-button:hover {
+    color: rgb(255,255,255) !important;
+}
+
+#upper-bar {
+    padding-right: 20px;
+}
+
+#bottom-bar {
+    padding-bottom: 10px;
+    padding-right: 35px;
+}

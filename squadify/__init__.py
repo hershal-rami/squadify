@@ -8,21 +8,17 @@ app = Flask(__name__)
 def homepage():
     return render_template("index.html")
 
-
 @app.route("/<uuid:squad_id>")
 def view_squad(squad_id):
     return "Hello, World!"
-
 
 @app.route("/api/new", methods=["POST"])
 def new_squad():
     return "Hello, World!"
 
-
 @app.route("/api/add", methods=["POST"])
 def add_to_squad():
     return "Hello, World!"
-
 
 @app.route("/api/finish", methods=["POST"])
 def finish_squad():
