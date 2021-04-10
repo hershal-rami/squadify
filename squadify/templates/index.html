@@ -23,7 +23,7 @@
     <noscript>You need to enable JavaScript to run this app.</noscript>
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <a class = "main-logo" href="#"> <img class="logo-image" src="{{url_for('static', filename='Squadify-Logo-Full-Transparent.png')}}"> </a>
+        <a class = "main-logo" href="/"> <img class="logo-image" src="{{url_for('static', filename='Squadify-Logo-Full-Transparent.png')}}"> </a>
         <div class="container-fluid">
             <div class="d-flex flex-grow-1">
                 <span class="w-100 d-lg-none d-block"><!-- Hidden spacer centers brand on mobile--></span>
@@ -36,17 +36,27 @@
             <div class="collapse navbar-collapse flex-grow-1 text-right" id="upper-bar">
                 <ul class="navbar-nav nav-fill ms-auto flex-nowrap">
                     <li class="nav-item">
-                        <a href="#" class="nav-link">Home</a>
+                        <a href="/" class="nav-link">Home</a>
                     </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link">About</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" id ="playlists-button" class="nav-link">Playlists</a>
-                    </li>
-                    <li class="nav-item">
-                        <button type="button" id="sign-in-button" class="nav-link d-lg-block nav-login btn-round btn btn-outline-success">Sign In</button>
-                    </li>
+                    {% if logged_in %}
+                        <li class="nav-item">
+                            <a href="/about" class="nav-link">About</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/playlists" id ="playlists-button" class="nav-link">Playlists</a>
+                        </li>
+                        <li class="nav-item">
+                            <button type="button" id="logout-button" class="nav-link d-lg-block nav-login btn-round btn btn-outline-success">Sign Out</button>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a href="/about" id="logged-out-about" class="nav-link">About</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <button type="button" id="sign-in-button" class="nav-link d-lg-block nav-login btn-round btn btn-outline-success">Sign In</button>
+                        </li>
+                    {% endif %}
                 </ul>
             </div>
         </div>

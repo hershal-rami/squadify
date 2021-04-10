@@ -6,6 +6,7 @@ from flask_mongoengine import MongoEngine
 import mongoengine as me
 
 app = Flask(__name__)
+logged_in = False
 
 app.config['MONGODB_SETTINGS'] = {
     'db': 'squads',
@@ -21,7 +22,11 @@ class Squad(me.Document):
 
 @app.route("/")
 def homepage():
-    return render_template("index.html")
+    return render_template("index.html", logged_in=logged_in)
+
+@app.route("/about")
+def view_about():
+    return render_template("about.html", logged_in=logged_in)
 
 @app.route("/<uuid:squad_id>")
 def view_squad(squad_id):
