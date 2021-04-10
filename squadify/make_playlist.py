@@ -47,10 +47,10 @@ def playlists_to_members(playlists):
 
     return members
 
-Nick = Playlist("Nick", ["Kickstarts", "Kids", "Ichidaiji", "GOAT", "Loyola Fight Song"])
-Thomas = Playlist("Thomas", ["Kickstarts", "Fever Dream", "Dear Maria", "Kids", "Ichidaiji", "GOAT", "Loyola Fight Song"])
-Hershal = Playlist("Hershal", ["High Hopes", "Fever Dream", "Dear Maria", "Kids"])
-Justin = Playlist("Justin", ["High Hopes", "Dear Maria", "Kids", "Fever Dream"])
+Nick = Playlist("Nick", [])
+Thomas = Playlist("Thomas", [])
+Hershal = Playlist("Hershal", [])
+Justin = Playlist("Justin", [])
 playlists = [Nick, Thomas, Justin, Hershal]
 members = playlists_to_members(playlists)
 
@@ -105,20 +105,17 @@ def remove(song, level):
         members.pop(i)
 
 
-# also! edge case if all songs are gone, just stops code...
-#probably dont need to code anything since and for each member loops will just do nothing
-
 # main
 
 # pops unnecessary rows from song lists
 rem_list = []
-for member in members:
+for i, member in enumerate(members, start=0):
     level = member_num
     while len(member.songs[level]) == 0 and level >= 2:
         member.songs.pop()
         level -= 1
     if level == 1:
-        rem_list.insert(0, level)
+        rem_list.insert(0, i)
     
 # removes members without any songs left
 for i in rem_list:
@@ -148,7 +145,7 @@ while step2:
     if curr_level < 2:
         step2 = False
 
-#step3: addes songs to lowest level balanced 
+#step3: balances lowest level of songs added
 if len(members) > 0:
     while target_len - len(final_playlist) > 0:
         member = smallest_count()
