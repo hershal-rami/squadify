@@ -7,6 +7,7 @@ import spotipy
 import uuid
 from flask_mongoengine import MongoEngine
 import mongoengine as me
+import string
 
 app = Flask(__name__)
 
@@ -31,7 +32,9 @@ db = MongoEngine()
 db.init_app(app)
 
 class Squad(me.Document):
-    name = me.StringField()
+    user = me.StringField()
+    squad_name = me.StringField()
+    squad_id = me.StringField()
     playlists = me.ListField()
 
 @app.route("/")
@@ -77,18 +80,56 @@ def view_about():
         return redirect('/')
     return render_template("about.html", logged_in=True)
 
-@app.route("/<uuid:squad_id>")
+# Viewing existing squads
+@app.route("/squads")
+def view_squads():
+    cache_handler = spotipy.cache_handler.CacheFileHandler(cache_path=session_cache_path())
+    auth_manager = spotipy.oauth2.SpotifyOAuth(cache_handler=cache_handler)
+    if not auth_manager.validate_token(cache_handler.get_cached_token()):
+        return redirect('/')
+    sp = spotipy.Spotify(auth_manager=auth_manager)
+    return render_template("squads.html", logged_in=True, squads_list=Squad.objects(user="sp.me()['id']"))
+
+# Viewing specific squad's playlists
+@app.route("/squads/<uuid:squad_id>")
 def view_squad(squad_id):
-    return "Hello, World!"
+    cache_handler = spotipy.cache_handler.CacheFileHandler(cache_path=session_cache_path())
+    auth_manager = spotipy.oauth2.SpotifyOAuth(cache_handler=cache_handler)
+    if not auth_manager.validate_token(cache_handler.get_cached_token()):
+        return redirect('/')
+    
+    squad = Squad.objects(squad_id=squad_id).first()
+    return render_template("squad.html", logged_in=True, squad=squad)
 
-@app.route("/api/new", methods=["POST"])
+#class SquadForm(FlaskForm):
+#    squad_name = StringField('Squad Name:')
+
+# Create new squad
+@app.route("/api/new", methods=["GET", "POST"])
 def new_squad():
+    cache_handler = spotipy.cache_handler.CacheFileHandler(cache_path=session_cache_path())
+    auth_manager = spotipy.oauth2.SpotifyOAuth(cache_handler=cache_handler)
+    if not auth_manager.validate_token(cache_handler.get_cached_token()):
+        return redirect('/')
+ 
+    squad_form = SquadForm()
+
+    '''    if squad_form.validate_on_submit():
+        squad_name = squad_form.squad_name.data
+        #generate an id, get user id, make playlists empty
+        id = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(16))
+        while id 
+
+        return redirect(url_for('add_to_squad',))'''
+
     return "Hello, World!"
 
-@app.route("/api/add", methods=["POST"])
-def add_to_squad():
+# Add playlist to existing squad
+@app.route("/api/add", methods=["GET", "POST"])
+def add_to_squad(squad):
     return "Hello, World!"
 
-@app.route("/api/finish", methods=["POST"])
+# Public new playlist for squad
+@app.route("/api/finish", methods=["GET", "POST"])
 def finish_squad():
     return "Hello, World!"
