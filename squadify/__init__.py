@@ -1,13 +1,12 @@
 __version__ = "0.1.0"
 
-from flask import Flask
+from flask import Flask, render_template
 
 app = Flask(__name__)
 
-
 @app.route("/")
 def homepage():
-    return "Hello, World!"
+    return render_template("index.html")
 
 
 @app.route("/<uuid:mix_id>")
