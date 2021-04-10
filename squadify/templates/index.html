@@ -2,18 +2,21 @@
 
 <html lang="en">
 <head>
-  <meta charset="utf-8">
+    <meta charset="utf-8">
 
-  <title>Squadify</title>
-  <meta name="description" content="Merge your squad's music tastes into a single playlist!">
-  <meta name="author" content="Denny's Party">
-  <!-- <link rel="stylesheet" href="css/styles.css?v=1.0"> -->
+    <title>Squadify</title>
+    <meta name="description" content="Merge your squad's music tastes into a single playlist!">
+    <meta name="author" content="Denny's Party">
+    <!-- JavaScript Bundle with Popper --><script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js" integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf" crossorigin="anonymous"></script>
+    <script>
+        function squad_up() {
+            console.log("TODO");
+        }
+    </script>
 </head>
 
 <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
-    
-    <img src="../images/Spotify-Logo.png" alt="squadify-logo">
     <div class="header">
         <a class = "main-logo" href="http://127.0.0.1:5000/"> <img src = "{{url_for('static', filename='Spotify-Logo.png')}}"> </a>
         <span class="title"> Squadify </span>
@@ -30,7 +33,9 @@
             nisi. Etiam tellus leo, venenatis at laoreet quis, fringilla at odio. Nulla sollicitudin urna quis viverra posuere.
             Vivamus eu viverra arcu. Fusce sit amet efficitur purus, sed gravida felis. In tincidunt erat quam, ac pharetra turpis
             tincidunt ac. Cras libero purus, rhoncus sit amet dictum sed, facilisis in metus. Nulla dapibus lobortis felis id gravida.
-            Suspendisse commodo nisi et felis pulvinar, et dapibus ex feugiat.</p>
+            Suspendisse commodo nisi et felis pulvinar, et dapibus ex feugiat
+        .</p>
+        <button onclick="squad_up()">Squad Up!</button>
     </div>
 </body>
 </html>
