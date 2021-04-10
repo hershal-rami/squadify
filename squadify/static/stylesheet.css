@@ -1,3 +1,4 @@
+/* Home Page */
 .logo-image {
     max-width: 400px;
     max-height: 300px;
@@ -37,11 +38,10 @@ a, a:hover, a:focus{
     margin-right: 35px;
 }
 
-#playlists-button {
+#squads-button {
     margin-left: 0px;
     margin-right: 35px;
 }
-
 
 #upper-bar {
     padding-right: 20px;
@@ -50,4 +50,70 @@ a, a:hover, a:focus{
 #bottom-bar {
     padding-bottom: 10px;
     padding-right: 35px;
+}
+
+/* View Squads Page */
+.squads-header {
+    display: inline-block;
+    align-self: center;
+    align-content: center;
+}
+
+.squads-group .squads-list {
+    background-color: #4CAF50; /* Green */
+    border: 1px solid green;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 16px;
+    cursor: pointer;
+    width: 150px;
+    display: block;
+}
+
+.squads-group .squads-list:not(:last-child) {
+    border-bottom: none; /* Prevent double borders */
+}
+
+.squads-group .squads-list:hover {
+    background-color: #3e8e41;
+}
+
+/* Individual Squad Page */
+.squad-header {
+    display: inline-block;
+    align-self: center;
+    align-content: center;
+}
+
+.squad-leader {
+    display: inline-block;
+    align-self: center;
+    align-content: center;
+}
+
+.playlist-name {
+    display: inline-block;
+    align-self: center;
+    align-content: center;
+}
+
+.playlist-link {
+    display: inline-block;
+    align-self: center;
+    align-content: center;
+}
+
+.new-playlist-button {
+    display: inline-block;
+    align-self: center;
+    align-content: center;
+}
+
+/* Add Squad Page */
+.add-squad-button {
+    display: inline-block;
+    align-self: center;
+    align-content: center;
 }

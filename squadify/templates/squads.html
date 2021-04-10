@@ -1,0 +1,11 @@
+{% extends "index.html" %}
+{% block content %}
+<div class="squads-main">
+    <h1 class="squads-header">Squads</h1>
+    <div class="squads-group">
+        {% for squad in squads_list %}
+            <li><a href="/squads/{{squad.squad_id}}"><button class="squads-list">{{squad.squad_name}}</button></a></li>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
