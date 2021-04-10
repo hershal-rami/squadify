@@ -1,11 +1,11 @@
 [tool.poetry]
 name = "squadify"
-version = "0.1.0"
+version = "1.0.0"
 description = ""
 authors = []
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.8"
 flask = "^1.1.2"
 
 [tool.poetry.dev-dependencies]
