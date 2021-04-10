@@ -9,11 +9,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='tailwind.css')}}">
     <link rel="icon" href="{{url_for('static', filename='Squadify-Logo-Small-Solo.png')}}">
-    <script>
-        function squad_up() {
-            window.alert("Not yet implemented!")
-        }
-    </script>
 </head>
 
 <body class="h-screen mx-auto container flex flex-col bg-gray-800 space-y-8">
@@ -56,10 +51,16 @@
             tincidunt ac. Cras libero purus, rhoncus sit amet dictum sed, facilisis in metus. Nulla dapibus lobortis
             felis id gravida.
             Suspendisse commodo nisi et felis pulvinar, et dapibus ex feugiat</p>
-        <button
-            class="w-2/12 px-6 py-6 rounded-md border-2 border-green-500 text-4xl transitions duration-300 ease-in-out text-white hover:text-green-500"
-            onclick="squad_up()">Squad Up!</button>
-        {% endblock %}
+        {% if logged_in %}
+        <a href="/squads/new">
+            {% else %}
+            <a href="{{ auth_url }}">
+                {% endif %}
+                <button
+                    class="w-2/12 px-6 py-6 rounded-md border-2 border-green-500 text-4xl transitions duration-300 ease-in-out text-white hover:text-green-500">Squad
+                    Up!</button>
+            </a>
+            {% endblock %}
     </div>
 
     <div class="self-end mx-12 my-8 space-x-8">
