@@ -36,23 +36,25 @@
         </div>
     </div>
 
-    <div class="ml-56 flex-grow flex flex-col items-start">
+    <div class="flex-grow">
         {% block content %}
-        <p class="mt-16 text-4xl text-gray-100 w-5/12">Can't agree on what to listen to?</p>
-        <p class="mt-2 text-3xl text-gray-100 w-5/12">Merge your playlists with the
-            squad and never argue over who gets the aux again!</p>
-        <p class="mt-16 text-2xl text-gray-100 w-9/12">Connect your Spotify account and create a squad, then share
-            your unique URL to let everyone add their favorite playlists.</p>
-        <p class="my-2 mb-2 text-2xl text-gray-100 w-9/12">Our algorithm will merge
-            your playlists to maximize diversity, and automatically add it to your Spotify account.</p>
-        <p class="my-2 mb-24 text-2xl text-gray-100 w-9/12">Sign in now to get started and Squad Up!</p>
-        {% if logged_in %}
-        <a class="w-80 px-6 py-6 transform transition-transform hover:scale-110 rounded-md border-4 hover:border-green-400 border-green-500 text-center text-4xl transitions duration-300 ease-in-out text-gray-200 hover:text-green-500"
-            href="/squads/new">Squad Up!</a>
-        {% else %}
-        <a class="w-80 px-6 py-6 transform transition-transform hover:scale-110 rounded-md border-4 hover:border-green-400 border-green-500 text-center text-4xl transitions duration-300 ease-in-out text-gray-200 hover:text-green-500"
-            href="{{ auth_url }}">Squad Up!</a>
-        {% endif %}
+        <div class="ml-56 flex flex-col items-start">
+            <p class="mt-16 text-4xl text-gray-100 w-5/12">Can't agree on what to listen to?</p>
+            <p class="mt-2 text-3xl text-gray-100 w-5/12">Merge your playlists with the
+                squad and never argue over who gets the aux again!</p>
+            <p class="mt-16 text-2xl text-gray-100 w-9/12">Connect your Spotify account and create a squad, then share
+                your unique URL to let everyone add their favorite playlists.</p>
+            <p class="my-2 mb-2 text-2xl text-gray-100 w-9/12">Our algorithm will merge
+                your playlists to maximize diversity, and automatically add it to your Spotify account.</p>
+            <p class="my-2 mb-24 text-2xl text-gray-100 w-9/12">Sign in now to get started and Squad Up!</p>
+            {% if logged_in %}
+            <a class="w-80 px-6 py-6 transform transition-transform hover:scale-110 rounded-md border-4 hover:border-green-400 border-green-500 text-center text-4xl transitions duration-300 ease-in-out text-gray-200 hover:text-green-500"
+                href="/squads/new">Squad Up!</a>
+            {% else %}
+            <a class="w-80 px-6 py-6 transform transition-transform hover:scale-110 rounded-md border-4 hover:border-green-400 border-green-500 text-center text-4xl transitions duration-300 ease-in-out text-gray-200 hover:text-green-500"
+                href="{{ auth_url }}">Squad Up!</a>
+            {% endif %}
+        </div>
         {% endblock %}
     </div>
 
