@@ -20,7 +20,6 @@ class Track:
     def __str__(self):
         return self.title + " - " + ", ".join(self.artists)
 
-
 def get_tracks(sp, playlist_link):
     num_tracks = sp.playlist(playlist_link, fields=["tracks(total)"])["tracks"]["total"]
     tracks = []
@@ -28,7 +27,6 @@ def get_tracks(sp, playlist_link):
         playlist_items = sp.playlist_items(playlist_link, offset=i * TRACK_PULL_LIMIT)
         tracks.extend([Track(item["track"]) for item in playlist_items["items"]])
     return tracks
-
 
 def publish_squad_playlist(sp, playlist):
     user_id = sp.current_user()["id"]

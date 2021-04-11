@@ -7,19 +7,16 @@ thresh = 0  # target_len/(2*member_num) # threshold size for each person
 final_playlist = []  # final playlist
 members = []
 
-
 class Member:
     def __init__(self, name, member_num):
         self.name = name
         self.count = 0
         self.songs = [[] for _ in range(member_num + 1)]
 
-
 class Playlist:
     def __init__(self, name, tracks):
         self.name = name
         self.tracks = tracks
-
 
 def playlists_to_members(playlists):
     # Compute track freqencies
@@ -52,7 +49,6 @@ def playlists_to_members(playlists):
 
     return members
 
-
 Nick = Playlist("Nick", [])
 Thomas = Playlist("Thomas", [])
 Hershal = Playlist("Hershal", [])
@@ -78,7 +74,6 @@ def thresh_met():
             ret = False
     return ret
 
-
 # returns the member with smallest count
 def smallest_count():
     smallest_member = members[0]
@@ -88,7 +83,6 @@ def smallest_count():
             smallest_member = member
             smallest_count = member.count
     return smallest_member
-
 
 # removes a song from all members, increments count
 def remove(song, level):
@@ -111,7 +105,6 @@ def remove(song, level):
     # removes members without any songs left
     for i in rem_list:
         members.pop(i)
-
 
 # main
 
