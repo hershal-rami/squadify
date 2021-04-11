@@ -5,7 +5,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="description" content="Merge your squad's music tastes into a single playlist!">
-    <meta name="author" content="Denny's Party">
+    <meta name="author" content="Conscientious Objectors">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='tailwind.css')}}">
     <link rel="icon" href="{{url_for('static', filename='Squadify-Logo-Small-Solo.png')}}">
@@ -19,7 +19,6 @@
         </a>
         <div class="text-l md:text-4xl ml-auto space-x-2 md:space-x-8">
             <a class="transitions-colors duration-300 ease-in-out text-gray-300 hover:text-green-500" href="/">Home</a>
-            <a class="transitions duration-300 ease-in-out text-gray-300 hover:text-green-500" href="/about">About</a>
             {% if logged_in %}
             <a class="transitions duration-300 ease-in-out text-gray-300 hover:text-green-500" href="/squads">Squads</a>
             <a class="px-3 md:px-6 py-2 md:py-4 rounded-md border-2 md:border-4 border-green-500 hover:border-green-400 transitions duration-300 ease-in-out text-gray-300 hover:text-green-500"
@@ -61,8 +60,11 @@
             {% endif %}
         </div>
         {% endblock %}
+    </div>
 
     <div class="self-end mx-6 md:mx-12 mb-4 md:mb-8 space-x-4 md:space-x-8">
+        <a class="text-l md:text-4xl transitions duration-300 ease-in-out text-gray-300 hover:text-green-500"
+            href="/about">About</a>
         <a class="text-l md:text-4xl transitions duration-300 ease-in-out text-gray-300 hover:text-green-500"
             href="https://forms.gle/eeT6MctMY8tPQ97k6" target="_blank">Feedback Form</a>
         <a class="text-l md:text-4xl transitions duration-300 ease-in-out text-gray-300 hover:text-green-500"
