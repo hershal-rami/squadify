@@ -158,6 +158,7 @@ def new_squad(sp):
         db.insert_one(
             dict(
                 user=sp.me()["id"],
+                user_display_name=sp.me()["display_name"],
                 squad_name=squad_name,
                 squad_id=squad_id,
                 playlists=[],
