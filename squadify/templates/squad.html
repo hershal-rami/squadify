@@ -30,7 +30,8 @@
         placeholder="Playlist Link" ) }}
         <input type="submit" value="Add your playlist"
             class="px-10 py-6 rounded-r-md bg-transparent border-4 hover:border-green-400 border-green-500 font-bold">
+        <a class="ml-12 px-10 py-6 rounded-md bg-transparent border-4 hover:border-green-400 border-green-500 font-bold"
+            href="/squads/{{ squad.squad_id }}/finish">Compile Playlist!</a>
     </form>
-    <a href="/squads/{{ squad.squad_id }}/finish">Compile Playlist!</a>
 </div>
 {% endblock %}
