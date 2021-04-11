@@ -18,21 +18,19 @@
     <form method="POST" action="/squads/{{ squad.squad_id }}/add" class="flex justify-center text-white text-md">
         {{ playlist_form.hidden_tag() }}
         {{ playlist_form.user_name(size=30,
-        class="w-1/6 px-10 py-6 rounded-l-md bg-transparent border-t-2 border-l-2
-        border-b-2 hover:border-green-400
+        class="w-1/6 px-10 py-6 rounded-l-md bg-transparent border-t-4 border-l-4
+        border-b-4 hover:border-green-400
         border-green-500 font-bold",
         placeholder="Your Name" ) }}
         {{ playlist_form.hidden_tag() }}
         {{ playlist_form.playlist_link(size=200,
-        class="w-1/6 px-10 py-6 bg-transparent border-t-2 border-l-2
-        border-b-2 hover:border-green-400
+        class="w-1/6 px-10 py-6 bg-transparent border-t-4 border-l-4
+        border-b-4 hover:border-green-400
         border-green-500 font-bold",
         placeholder="Playlist Link" ) }}
         <input type="submit" value="Add your playlist"
-            class="px-10 py-6 rounded-r-md bg-transparent border-t-2 border-l-2 border-r-2 border-b-2 hover:border-green-400 border-green-500 font-bold">
+            class="px-10 py-6 rounded-r-md bg-transparent border-4 hover:border-green-400 border-green-500 font-bold">
     </form>
-    <a href="/squads/{{ squad.squad_id }}/finish">
-        <button>Compile squad playlist!</button>
-    </a>
+    <a href="/squads/{{ squad.squad_id }}/finish">Compile Playlist!</a>
 </div>
 {% endblock %}
