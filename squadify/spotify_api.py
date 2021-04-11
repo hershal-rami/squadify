@@ -5,9 +5,6 @@ import math
 SCOPE = "playlist-modify-public"
 TRACK_PULL_LIMIT = 100
 
-sp = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=SCOPE))
-
-
 class Track:
     def __init__(self, track):
         self.title = track["name"]
@@ -24,7 +21,7 @@ class Track:
         return self.title + " - " + ", ".join(self.artists)
 
 
-def get_tracks(playlist_link):
+def get_tracks(sp, playlist_link):
     num_tracks = sp.playlist(playlist_link, fields=["tracks(total)"])["tracks"]["total"]
     tracks = []
     for i in range(math.ceil(num_tracks / TRACK_PULL_LIMIT)):
@@ -33,7 +30,7 @@ def get_tracks(playlist_link):
     return tracks
 
 
-def publish_squad_playlist(playlist):
+def publish_squad_playlist(sp, playlist):
     user_id = sp.current_user()["id"]
     playlist_id = sp.user_playlist_create(user_id, "test_user_playlist_create")["id"]
     sp.user_playlist_add_tracks(user_id, playlist_id, [track.id for track in playlist])

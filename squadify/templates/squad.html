@@ -25,5 +25,8 @@
         {{ playlist_form.playlist_link(size=80) }}
         <input type="submit" value="Add your playlist">
     </form>
+    <a href="/squads/{{ squad.squad_id }}/finish">
+        <button>Compile squad playlist!</button>
+    </a>
 </div>
 {% endblock %}
