@@ -1,13 +1,15 @@
 {% extends "index.html" %}
 {% block content %}
-<form method="POST" action="/squads/new" class="mt-28 flex text-white text-xl">
-    {{ squad_form.hidden_tag() }}
-    {{ squad_form.squad_name(size=80,
-    class="px-10 py-6 rounded-l-md bg-transparent border-t-2 border-l-2
-    border-b-2 hover:border-green-400
-    border-green-500 font-bold",
-    placeholder="Squad Name" ) }}
-    <input type="submit" value="Submit"
-        class="px-10 py-6 rounded-r-md bg-transparent border-t-2 border-l-2 border-r-2 border-b-2 hover:border-green-400 border-green-500 font-bold">
-</form>
+<div class="flex flex-col items-center">
+    <form method="POST" action="/squads/new" class="mt-28 flex text-white text-xl">
+        {{ squad_form.hidden_tag() }}
+        {{ squad_form.squad_name(size=80,
+        class="px-10 py-6 rounded-l-md bg-transparent border-t-4 border-l-4
+        border-b-4 hover:border-green-400
+        border-green-500 font-bold",
+        placeholder="Squad Name" ) }}
+        <input type="submit" value="Submit"
+            class="px-10 py-6 rounded-r-md bg-transparent border-4 hover:border-green-400 border-green-500 font-bold">
+    </form>
+</div>
 {% endblock %}

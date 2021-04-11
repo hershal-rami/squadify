@@ -49,6 +49,7 @@ def authenticate(f):
 
     return wrapper
 
+
 def auth_optional(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
@@ -126,17 +127,21 @@ def view_squads(sp):
 @app.route("/squads/<uuid:squad_id>")
 @auth_optional
 def view_squad(squad_id, sp):
-    #TODO Use user's name, not just ID
+    # TODO Use user's name, not just ID
     squad = db.find_one({"squad_id": str(squad_id)})
     leader = (sp != None) and (sp.me()["id"] == squad["user"])
     return render_template(
-        "squad.html", logged_in=True, squad=squad, playlist_form=PlaylistForm(),
-        leader=leader
+        "squad.html",
+        logged_in=True,
+        squad=squad,
+        playlist_form=PlaylistForm(),
+        leader=leader,
     )
 
 
 class SquadForm(FlaskForm):
     squad_name = StringField("Squad Name:")
+
 
 class PlaylistForm(FlaskForm):
     user_name = StringField("User Name:")
@@ -177,10 +182,16 @@ def add_to_squad(squad_id, sp):
         user_name = playlist_form.user_name.data
         db.update_one(
             {"squad_id": str(squad_id)},
-            {"$push": {"playlists":
-            {"playlist_link": playlist_link,
-            "user_name": user_name}}})
-    
+            {
+                "$push": {
+                    "playlists": {
+                        "playlist_link": playlist_link,
+                        "user_name": user_name,
+                    }
+                }
+            },
+        )
+
     return redirect(f"/squads/{squad_id}")
 
 
