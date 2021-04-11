@@ -116,6 +116,7 @@ def view_squads(sp):
 @app.route("/squads/<uuid:squad_id>")
 @auth_optional
 def view_squad(squad_id, sp):
+    # TODO Use user's name, not just ID
     squad = db.find_one({"squad_id": str(squad_id)})
     leader = (sp != None) and (sp.me()["id"] == squad["user"])
     return render_template(
@@ -125,6 +126,13 @@ def view_squad(squad_id, sp):
         playlist_form=PlaylistForm(),
         leader=leader,
     )
+
+class SquadForm(FlaskForm):
+    squad_name = StringField("Squad Name:")
+
+class PlaylistForm(FlaskForm):
+    user_name = StringField("User Name:")
+    playlist_link = StringField("Playlist Link:")
 
 # Create new squad
 @app.route("/squads/new", methods=["GET", "POST"])
