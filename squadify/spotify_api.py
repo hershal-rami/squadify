@@ -30,7 +30,8 @@ def get_tracks(sp, playlist_link):
     return tracks
 
 
-def publish_squad_playlist(sp, playlist):
+def publish_squad_playlist(sp, playlist, playlist_name):
     user_id = sp.current_user()["id"]
-    playlist_id = sp.user_playlist_create(user_id, "test_user_playlist_create")["id"]
+    playlist_id = sp.user_playlist_create(user_id, playlist_name)["id"]
     sp.user_playlist_add_tracks(user_id, playlist_id, [track.id for track in playlist])
+    return playlist_id

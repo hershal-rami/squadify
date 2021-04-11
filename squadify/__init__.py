@@ -2,6 +2,9 @@ __version__ = "0.1.0"
 
 from functools import wraps
 import os
+from re import S
+from squadify.spotify_api import get_tracks, publish_squad_playlist
+from squadify.make_playlist import Playlist, make_squad_playlist
 from flask import Flask, render_template, session, request, redirect
 from flask_session import Session
 import spotipy
@@ -186,4 +189,9 @@ def add_to_squad(squad_id, sp):
 @authenticate
 def finish_squad(squad_id, sp):
     squad = db.find_one({"squad_id": str(squad_id)})
-    playlists = []
+    playlists = [(playlist["user_name"], playlist["playlist_link"]) for playlist in squad["playlists"]]
+    playlists = [Playlist(name, get_tracks(sp, url)) for name, url in playlists]
+    squad_playlist = make_squad_playlist(playlists)
+    playlist_id = publish_squad_playlist(sp, squad_playlist, squad["squad_name"])
+    return render_template("finish.html", logged_in=True,
+        playlist_url="https://open.spotify.com/playlist/"+playlist_id)
