@@ -4,26 +4,32 @@
     <p class="text-8xl font-bold bg-gradient-to-tr from-green-600 to-yellow-400 bg-clip-text text-transparent">
         {{squad.squad_name}}
     </p>
-    <div class="flex flex-col space-y-2">
-        <p class="text-3xl font-bold text-green-500">
-            Squad Leader:
-        <p class="text-3xl font-bold text-green-500">
-            {{squad.user}}
-        </p>
-    </div>
+    <p class="text-3xl font-bold text-green-500">
+        Squad Leader: {{squad.user}}
+    </p>
     {% for playlist in squad.playlists %}
-    <li>
-        <p>Playlist: {{playlist.playlist_link}}</p>
-        <p>Added by: {{playlist.user_name}}</p>
-    </li>
+    <div class="flex flex-col text-3xl font-bold text-white">
+        <li>
+            <span>{{playlist.user_name}}:</span>
+            <span class="text-gray-400">{{playlist.playlist_link}}</span>
+        </li>
+    </div>
     {% endfor %}
-    <form method="POST" action="/squads/{{ squad.squad_id }}/add">
+    <form method="POST" action="/squads/{{ squad.squad_id }}/add" class="flex justify-center text-white text-md">
         {{ playlist_form.hidden_tag() }}
-        {{ playlist_form.user_name(size=80) }}
-        <input type="text" value="Enter your name">
+        {{ playlist_form.user_name(size=30,
+        class="w-1/6 px-10 py-6 rounded-l-md bg-transparent border-t-2 border-l-2
+        border-b-2 hover:border-green-400
+        border-green-500 font-bold",
+        placeholder="Your Name" ) }}
         {{ playlist_form.hidden_tag() }}
-        {{ playlist_form.playlist_link(size=80) }}
-        <input type="submit" value="Add your playlist">
+        {{ playlist_form.playlist_link(size=200,
+        class="w-1/6 px-10 py-6 bg-transparent border-t-2 border-l-2
+        border-b-2 hover:border-green-400
+        border-green-500 font-bold",
+        placeholder="Playlist Link" ) }}
+        <input type="submit" value="Add your playlist"
+            class="px-10 py-6 rounded-r-md bg-transparent border-t-2 border-l-2 border-r-2 border-b-2 hover:border-green-400 border-green-500 font-bold">
     </form>
 </div>
 {% endblock %}
