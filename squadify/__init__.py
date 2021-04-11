@@ -29,7 +29,6 @@ def session_cache_path():
 client = MongoClient("localhost", 27017)
 db = client["squads"]["squads"]
 
-
 def authenticate(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
