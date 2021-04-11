@@ -13,12 +13,17 @@
     </div>
     {% for playlist in squad.playlists %}
     <li>
-        <p>Playlist: {{playlist.url}}</p>>
+        <p>Playlist: {{playlist.playlist_link}}</p>
+        <p>Added by: {{playlist.user_name}}</p>
     </li>
     {% endfor %}
-    <button
-        class="px-6 py-6 transform transition-transform hover:scale-110 rounded-md border-2 hover:border-green-400 border-green-500 text-center text-4xl transitions duration-300 ease-in-out text-white hover:text-green-500">Add
-        Your Playlist!
-    </button>
+    <form method="POST" action="/squads/{{ squad.squad_id }}/add">
+        {{ playlist_form.hidden_tag() }}
+        {{ playlist_form.user_name(size=80) }}
+        <input type="text" value="Enter your name">
+        {{ playlist_form.hidden_tag() }}
+        {{ playlist_form.playlist_link(size=80) }}
+        <input type="submit" value="Add your playlist">
+    </form>
 </div>
 {% endblock %}

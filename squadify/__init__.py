@@ -108,11 +108,15 @@ def view_squads(sp):
 @authenticate
 def view_squad(squad_id, sp):
     squad = db.find_one({"squad_id": str(squad_id)})
-    return render_template("squad.html", logged_in=True, squad=squad)
+    return render_template("squad.html", logged_in=True, squad=squad, playlist_form=PlaylistForm())
 
 
 class SquadForm(FlaskForm):
     squad_name = StringField("Squad Name:")
+
+class PlaylistForm(FlaskForm):
+    user_name = StringField("User Name:")
+    playlist_link = StringField("Playlist Link:")
 
 
 # Create new squad
@@ -124,10 +128,7 @@ def new_squad(sp):
     if squad_form.validate_on_submit():
         squad_name = squad_form.squad_name.data
         # generate an id, get user id, make playlists empty
-        while True:
-            squad_id = str(uuid.uuid4())
-            if not db.find_one({"squad_id": squad_id}):
-                break
+        squad_id = str(uuid.uuid4())
         db.insert_one(
             dict(
                 user=sp.me()["id"],
@@ -145,7 +146,18 @@ def new_squad(sp):
 @app.route("/squads/<uuid:squad_id>/add", methods=["GET", "POST"])
 @authenticate
 def add_to_squad(squad_id, sp):
-    return "Hello, World!"
+    playlist_form = PlaylistForm()
+
+    if playlist_form.validate_on_submit():
+        playlist_link = playlist_form.playlist_link.data
+        user_name = playlist_form.user_name.data
+        db.update_one(
+            {"squad_id": str(squad_id)},
+            {"$push": {"playlists":
+            {"playlist_link": playlist_link,
+            "user_name": user_name}}})
+    
+    return redirect(f"/squads/{squad_id}")
 
 
 # Public new playlist for squad
