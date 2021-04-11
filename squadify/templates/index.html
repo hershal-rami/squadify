@@ -11,13 +11,15 @@
     <link rel="icon" href="{{url_for('static', filename='Squadify-Logo-Small-Solo.png')}}">
 </head>
 
-<body class="h-screen mx-auto container flex flex-col" style="background-color: #0d0d0d; opacity: 1; background-image: repeating-radial-gradient( circle at 0 0, transparent 0, #0d0d0d 34px ), repeating-linear-gradient( #2f323055, #2f3230 );">
-    <div class="mt-8 mb-16 flex items-center">
+<body class="h-screen mx-auto container flex flex-col"
+    style="background-color: #0d0d0d; opacity: 1; background-image: repeating-radial-gradient( circle at 0 0, transparent 0, #0d0d0d 34px ), repeating-linear-gradient( #2f323055, #2f3230 );">
+    <div class="mt-8 mb-8 flex items-center">
         <a href="/">
             <img class="h-36" src="{{url_for('static', filename='Squadify-Logo-Full-Transparent.png')}}">
         </a>
         <div class="ml-auto mx-12 space-x-8">
-            <a class="text-4xl transitions duration-300 ease-in-out text-gray-300 hover:text-green-500" href="/">Home</a>
+            <a class="text-4xl transitions duration-300 ease-in-out text-gray-300 hover:text-green-500"
+                href="/">Home</a>
             {% if logged_in %}
             <a class="text-4xl transitions duration-300 ease-in-out text-gray-300 hover:text-green-500"
                 href="/about">About</a>
@@ -34,10 +36,17 @@
         </div>
     </div>
 
+    <div class="flex-grow">
         {% block content %}
-        <div class="ml-56 flex-grow flex flex-col items-start space-y-24">
-            <h1 class="mt-16 text-3xl text-gray-200 w-5/12">Can't agree on what to listen to? Merge your playlists with the squad and never argue over who gets the aux again!</h1>
-            <h2 class="mt-16 text-2xl text-gray-200 w-9/12">Connect your Spotify account and create a squad with your friends, then share your unique URL to let everyone add their favorite playlists. Our algorithm will merge your playlists to maximize diversity or genre and automatically add it to your Spotify account. Sign in now to get started and squad up!</h2>
+        <div class="ml-56 flex flex-col items-start">
+            <p class="mt-16 text-4xl text-gray-100 w-5/12">Can't agree on what to listen to?</p>
+            <p class="mt-2 text-3xl text-gray-100 w-5/12">Merge your playlists with the
+                squad and never argue over who gets the aux again!</p>
+            <p class="mt-16 text-2xl text-gray-100 w-9/12">Connect your Spotify account and create a squad, then share
+                your unique URL to let everyone add their favorite playlists.</p>
+            <p class="my-2 mb-2 text-2xl text-gray-100 w-9/12">Our algorithm will merge
+                your playlists to maximize diversity, and automatically add it to your Spotify account.</p>
+            <p class="my-2 mb-24 text-2xl text-gray-100 w-9/12">Sign in now to get started and Squad Up!</p>
             {% if logged_in %}
             <a class="w-80 px-6 py-6 transform transition-transform hover:scale-110 rounded-md border-4 hover:border-green-400 border-green-500 text-center text-4xl transitions duration-300 ease-in-out text-gray-200 hover:text-green-500"
                 href="/squads/new">Squad Up!</a>
@@ -48,7 +57,7 @@
         </div>
         {% endblock %}
 
-    <div class="self-end mx-12 my-8 space-x-8">
+    <div class="self-end mx-12 mb-8 space-x-8">
         <a class="text-4xl transitions duration-300 ease-in-out text-gray-300 hover:text-green-500"
             href="https://forms.gle/eeT6MctMY8tPQ97k6" target="_blank">Feedback Form</a>
         <a class="text-4xl transitions duration-300 ease-in-out text-gray-300 hover:text-green-500"
