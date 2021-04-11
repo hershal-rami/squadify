@@ -1,12 +1,5 @@
 import random
 
-# placehold vars
-member_num = 4  # number of squad members
-target_len = 6  # can make a fn reletive to member_num
-thresh = 0  # target_len/(2*member_num) # threshold size for each person
-final_playlist = []  # final playlist
-members = []
-
 class Member:
     def __init__(self, name, member_num):
         self.name = name
@@ -49,25 +42,8 @@ def playlists_to_members(playlists):
 
     return members
 
-Nick = Playlist("Nick", [])
-Thomas = Playlist("Thomas", [])
-Hershal = Playlist("Hershal", [])
-Justin = Playlist("Justin", [])
-playlists = [Nick, Thomas, Justin, Hershal]
-members = playlists_to_members(playlists)
-
-# Nick = Member("Nick", member_num)
-# Thomas = Member("Thomas", member_num)
-# Hershal = Member("Hershal", member_num)
-# Justin = Member("Justin", member_num)
-# Nick.songs = [[], [], ["Kickstarts"], ["Fever Dream"], ["Kids"]]
-# Thomas.songs = [[], [], ["Kickstarts"], ["Fever Dream", "Dear Maria"], ["Kids"]]
-# Hershal.songs = [[], [], ["High Hopes"], ["Fever Dream", "Dear Maria"], ["Kids"]]
-# Justin.songs = [[], [], ["High Hopes"], ["Dear Maria"], ["Kids"]]
-# members = [Nick, Thomas, Justin, Hershal]
-
 # checks if threshold is met for all members
-def thresh_met():
+def thresh_met(members, thresh):
     ret = True
     for member in members:
         if member.count < thresh:
@@ -75,7 +51,7 @@ def thresh_met():
     return ret
 
 # returns the member with smallest count
-def smallest_count():
+def smallest_count(members):
     smallest_member = members[0]
     smallest_count = members[0].count
     for member in members:
@@ -85,7 +61,7 @@ def smallest_count():
     return smallest_member
 
 # removes a song from all members, increments count
-def remove(song, level):
+def remove(song, level, members, final_playlist):
     rem_list = []
     final_playlist.append(song)
     for i, member in enumerate(members, start=0):
@@ -106,50 +82,57 @@ def remove(song, level):
     for i in rem_list:
         members.pop(i)
 
-# main
+def make_squad_playlist(playlists):
+    final_playlist = []
+    target_playlist_size = (lambda a : sum(a) // len(a))(list((len(playlist.tracks) for playlist in playlists)))
+    squad_size = len(playlists)
 
-# pops unnecessary rows from song lists
-rem_list = []
-for i, member in enumerate(members, start=0):
-    level = member_num
-    while len(member.songs[level]) == 0 and level >= 2:
-        member.songs.pop()
-        level -= 1
-    if level == 1:
-        rem_list.insert(0, i)
+    # convert playlists array to members 2d array
+    members = playlists_to_members(playlists)
+    
+    # pops unnecessary rows from song lists
+    rem_list = []
+    for i, member in enumerate(members, start=0):
+        level = squad_size
+        while len(member.songs[level]) == 0 and level >= 2:
+            member.songs.pop()
+            level -= 1
+        if level == 1:
+            rem_list.insert(0, i)
 
-# removes members without any songs left
-for i in rem_list:
-    members.pop(i)
+    # removes members without any songs left
+    for i in rem_list:
+        members.pop(i)
 
-# step1: adds songs till each member meets the threshold
-while not thresh_met():
-    member = smallest_count()
-    remove(member.songs[-1][0], len(member.songs) - 1)
+    # step1: adds songs till each member meets the threshold
+    thresh = target_playlist_size / (2 * squad_size)
+    while not thresh_met(members, thresh):
+        member = smallest_count(members)
+        remove(member.songs[-1][0], len(member.songs) - 1, members, final_playlist)
 
-# step2: add most popular songs until reachest smalles level of songs which will be added
-step2 = True
-curr_level = member_num
-while step2:
-    songs_at_level = 0
-    for member in members:
-        if len(member.songs) - 1 == curr_level:
-            songs_at_level += len(member.songs[curr_level])
-    songs_at_level /= curr_level
-    if songs_at_level <= target_len - len(final_playlist):
+    # step2: add most popular songs until reachest smalles level of songs which will be added
+    step2 = True
+    curr_level = squad_size
+    while step2:
+        songs_at_level = 0
         for member in members:
-            while len(member.songs) - 1 == curr_level:
-                remove(member.songs[curr_level][0], curr_level)
-        curr_level -= 1
-    else:
-        step2 = False
-    if curr_level < 2:
-        step2 = False
+            if len(member.songs) - 1 == curr_level:
+                songs_at_level += len(member.songs[curr_level])
+        songs_at_level /= curr_level
+        if songs_at_level <= target_playlist_size - len(final_playlist):
+            for member in members:
+                while len(member.songs) - 1 == curr_level:
+                    remove(member.songs[curr_level][0], curr_level, members, final_playlist)
+            curr_level -= 1
+        else:
+            step2 = False
+        if curr_level < 2:
+            step2 = False
 
-# step3: balances lowest level of songs added
-if len(members) > 0:
-    while target_len - len(final_playlist) > 0:
-        member = smallest_count()
-        remove(member.songs[-1][0], curr_level)
+    # step3: balances lowest level of songs added
+    if len(members) > 0:
+        while target_playlist_size - len(final_playlist) > 0:
+            member = smallest_count(members)
+            remove(member.songs[-1][0], curr_level, members, final_playlist)
 
-print(final_playlist)
+    return final_playlist
