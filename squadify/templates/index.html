@@ -9,10 +9,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='tailwind.css')}}">
     <link rel="icon" href="{{url_for('static', filename='Squadify-Logo-Small-Solo.png')}}">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:ital,wght@0,400;0,700;1,500&display=swap"
+        rel="stylesheet">
 </head>
 
 <body class="h-screen mx-auto container flex flex-col"
-    style="background-color: #0d0d0d; opacity: 1; background-image: repeating-radial-gradient( circle at 0 0, transparent 0, #0d0d0d 34px ), repeating-linear-gradient( #2f323055, #2f3230 );">
+    style="font-family: 'Prompt', sans-serif; background-color: #0d0d0d; opacity: 1; background-image: repeating-radial-gradient( circle at 0 0, transparent 0, #0d0d0d 34px ), repeating-linear-gradient( #2f323055, #2f3230 );">
     <div class="mx-4 md:mx-0 mt-8 md:mb-8 flex items-center">
         <a href="/">
             <img class="h-10 md:h-36" src="{{url_for('static', filename='Squadify-Logo-Full-Transparent.png')}}">
