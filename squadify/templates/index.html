@@ -13,24 +13,19 @@
 
 <body class="h-screen mx-auto container flex flex-col"
     style="background-color: #0d0d0d; opacity: 1; background-image: repeating-radial-gradient( circle at 0 0, transparent 0, #0d0d0d 34px ), repeating-linear-gradient( #2f323055, #2f3230 );">
-    <div class="mt-8 mb-8 flex items-center">
+    <div class="mx-4 md:mx-0 mt-8 md:mb-8 flex items-center">
         <a href="/">
-            <img class="h-36" src="{{url_for('static', filename='Squadify-Logo-Full-Transparent.png')}}">
+            <img class="h-10 md:h-36" src="{{url_for('static', filename='Squadify-Logo-Full-Transparent.png')}}">
         </a>
-        <div class="ml-auto mx-12 space-x-8">
-            <a class="text-4xl transitions duration-300 ease-in-out text-gray-300 hover:text-green-500"
-                href="/">Home</a>
+        <div class="text-l md:text-4xl ml-auto space-x-2 md:space-x-8">
+            <a class="transitions-colors duration-300 ease-in-out text-gray-300 hover:text-green-500" href="/">Home</a>
+            <a class="transitions duration-300 ease-in-out text-gray-300 hover:text-green-500" href="/about">About</a>
             {% if logged_in %}
-            <a class="text-4xl transitions duration-300 ease-in-out text-gray-300 hover:text-green-500"
-                href="/about">About</a>
-            <a class="text-4xl transitions duration-300 ease-in-out text-gray-300 hover:text-green-500"
-                href="/squads">Squads</a>
-            <a class="px-6 py-4 rounded-md border-4 border-green-500 hover:border-green-400 text-4xl transitions duration-300 ease-in-out text-gray-300 hover:text-green-500"
+            <a class="transitions duration-300 ease-in-out text-gray-300 hover:text-green-500" href="/squads">Squads</a>
+            <a class="px-3 md:px-6 py-2 md:py-4 rounded-md border-2 md:border-4 border-green-500 hover:border-green-400 transitions duration-300 ease-in-out text-gray-300 hover:text-green-500"
                 href="/sign_out">Sign Out</a>
             {% else %}
-            <a class="text-4xl transitions duration-300 ease-in-out text-gray-300 hover:text-green-500"
-                href="/about">About</a>
-            <a class="px-6 py-4 rounded-md border-4 border-green-500 hover:border-green-400 text-4xl transitions duration-300 ease-in-out text-gray-300 hover:text-green-500"
+            <a class="px-3 md:px-6 py-2 md:py-4 rounded-md border-2 md:border-4 border-green-500 hover:border-green-400 transitions duration-300 ease-in-out text-gray-300 hover:text-green-500"
                 href="{{ auth_url }}">Sign In</a>
             {% endif %}
         </div>
@@ -38,30 +33,40 @@
 
     <div class="flex-grow">
         {% block content %}
-        <div class="ml-56 flex flex-col items-start">
-            <p class="mt-16 text-4xl text-gray-100 w-5/12">Can't agree on what to listen to?</p>
-            <p class="mt-2 text-3xl text-gray-100 w-5/12">Merge your playlists with the
+        <div class="ml-14 md:ml-56 flex flex-col">
+            <p class="w-10/12 md:w-auto mt-8 md:mt-16 text-2xl md:text-4xl text-gray-100 w-5/12">Can't agree on what to
+                listen
+                to?</p>
+            <p class="w-10/12 md:w-auto mt-2 text-xl md:text-3xl text-gray-100 w-5/12">Merge your playlists with the
                 squad and never argue over who gets the aux again!</p>
-            <p class="mt-16 text-2xl text-gray-100 w-9/12">Connect your Spotify account and create a squad, then share
+            <p class="w-10/12 md:w-auto mt-8 md:mt-16 text-l md:text-2xl text-gray-100 w-9/12">Connect your Spotify
+                account and
+                create a
+                squad,
+                then share
                 your unique URL to let everyone add their favorite playlists.</p>
-            <p class="my-2 mb-2 text-2xl text-gray-100 w-9/12">Our algorithm will merge
+            <p class="w-10/12 md:w-auto my-2 text-l md:text-2xl text-gray-100 w-9/12">Our algorithm will
+                merge
                 your playlists to maximize diversity, and automatically add it to your Spotify account.</p>
-            <p class="my-2 mb-24 text-2xl text-gray-100 w-9/12">Sign in now to get started and Squad Up!</p>
+            <p class="w-10/12 md:w-auto mt-2 mb-12 md:mb-24 text-l md:text-2xl text-gray-100 w-9/12">Sign in now to
+                get started
+                and Squad
+                Up!</p>
             {% if logged_in %}
-            <a class="w-80 px-6 py-6 transform transition-transform hover:scale-110 rounded-md border-4 hover:border-green-400 border-green-500 text-center text-4xl transitions duration-300 ease-in-out text-gray-200 hover:text-green-500"
+            <a class="w-40 md:w-80 px-3 md:px-6 py-3 md:py-6 transform transition-transform hover:scale-110 rounded-md border-2 md:border-4 hover:border-green-400 border-green-500 text-center text-2xl md:text-4xl transitions duration-300 ease-in-out text-gray-200 hover:text-green-500"
                 href="/squads/new">Squad Up!</a>
             {% else %}
-            <a class="w-80 px-6 py-6 transform transition-transform hover:scale-110 rounded-md border-4 hover:border-green-400 border-green-500 text-center text-4xl transitions duration-300 ease-in-out text-gray-200 hover:text-green-500"
+            <a class="w-40 md:w-80 px-3 md:px-6 py-3 md:py-6 transform transition-transform hover:scale-110 rounded-md border-2 md:border-4 hover:border-green-400 border-green-500 text-center text-2xl md:text-4xl transitions duration-300 ease-in-out text-gray-200 hover:text-green-500"
                 href="{{ auth_url }}">Squad Up!</a>
             {% endif %}
         </div>
         {% endblock %}
     </div>
 
-    <div class="self-end mx-12 mb-8 space-x-8">
-        <a class="text-4xl transitions duration-300 ease-in-out text-gray-300 hover:text-green-500"
+    <div class="self-end mx-6 md:mx-12 mb-4 md:mb-8 space-x-4 md:space-x-8">
+        <a class="text-l md:text-4xl transitions duration-300 ease-in-out text-gray-300 hover:text-green-500"
             href="https://forms.gle/eeT6MctMY8tPQ97k6" target="_blank">Feedback Form</a>
-        <a class="text-4xl transitions duration-300 ease-in-out text-gray-300 hover:text-green-500"
+        <a class="text-l md:text-4xl transitions duration-300 ease-in-out text-gray-300 hover:text-green-500"
             href="https://github.com/hershal-rami/squadify" target="_blank">GitHub</a>
     </div>
 </body>
