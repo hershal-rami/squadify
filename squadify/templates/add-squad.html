@@ -1,6 +1,10 @@
 {% extends "index.html" %}
 {% block content %}
 <div class="flex flex-col items-center">
+    {% if invalid_playlist %}
+        <script> window.alert("Invalid Playlist Link")</script>
+    {% endif %}
+
     <form method="POST" action="/squads/new" class="mt-28 flex text-white text-xs md:text-xl">
         {{ squad_form.hidden_tag() }}
         {{ squad_form.squad_name(size=80,

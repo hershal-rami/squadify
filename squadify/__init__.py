@@ -147,6 +147,7 @@ def new_squad(sp):
         db.insert_one(
             dict(
                 user=sp.me()["id"],
+                user_display_name=sp.me()["display_name"],
                 squad_name=squad_name,
                 squad_id=squad_id,
                 playlists=[],
@@ -164,6 +165,10 @@ def add_to_squad(squad_id, sp):
 
     if playlist_form.validate_on_submit():
         playlist_link = playlist_form.playlist_link.data
+
+        if sp.playlist(playlist_link) == None:
+            return redirect("/squads/<uuid:squad_id>/add", invalid_playlist=True)
+
         user_name = playlist_form.user_name.data
         db.update_one(
             {"squad_id": str(squad_id)},
