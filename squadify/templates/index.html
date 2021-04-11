@@ -5,7 +5,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="description" content="Merge your squad's music tastes into a single playlist!">
-    <meta name="author" content="Conscientious Objectors">
+    <meta name="author" content="Denny's Party">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='tailwind.css')}}">
     <link rel="icon" href="{{url_for('static', filename='Squadify-Logo-Small-Solo.png')}}">
@@ -34,19 +34,19 @@
         </div>
     </div>
 
-    <div class="ml-56 flex-grow flex flex-col items-start space-y-24">
         {% block content %}
-        <h1 class="mt-16 text-3xl text-gray-200 w-5/12">Can't agree on what to listen to? Merge your playlists with the squad and never argue over who gets the aux again!</h1>
-        <h2 class="mt-16 text-2xl text-gray-200 w-9/12">Connect your Spotify account and create a squad with your friends, then share your unique URL to let everyone add their favorite playlists. Our algorithm will merge your playlists to maximize diversity or genre and automatically add it to your Spotify account. Sign in now to get started and squad up!</h2>
-        {% if logged_in %}
-        <a class="w-80 px-6 py-6 transform transition-transform hover:scale-110 rounded-md border-4 hover:border-green-400 border-green-500 text-center text-4xl transitions duration-300 ease-in-out text-gray-200 hover:text-green-500"
-            href="/squads/new">Squad Up!</a>
-        {% else %}
-        <a class="w-80 px-6 py-6 transform transition-transform hover:scale-110 rounded-md border-4 hover:border-green-400 border-green-500 text-center text-4xl transitions duration-300 ease-in-out text-gray-200 hover:text-green-500"
-            href="{{ auth_url }}">Squad Up!</a>
-        {% endif %}
+        <div class="ml-56 flex-grow flex flex-col items-start space-y-24">
+            <h1 class="mt-16 text-3xl text-gray-200 w-5/12">Can't agree on what to listen to? Merge your playlists with the squad and never argue over who gets the aux again!</h1>
+            <h2 class="mt-16 text-2xl text-gray-200 w-9/12">Connect your Spotify account and create a squad with your friends, then share your unique URL to let everyone add their favorite playlists. Our algorithm will merge your playlists to maximize diversity or genre and automatically add it to your Spotify account. Sign in now to get started and squad up!</h2>
+            {% if logged_in %}
+            <a class="w-80 px-6 py-6 transform transition-transform hover:scale-110 rounded-md border-4 hover:border-green-400 border-green-500 text-center text-4xl transitions duration-300 ease-in-out text-gray-200 hover:text-green-500"
+                href="/squads/new">Squad Up!</a>
+            {% else %}
+            <a class="w-80 px-6 py-6 transform transition-transform hover:scale-110 rounded-md border-4 hover:border-green-400 border-green-500 text-center text-4xl transitions duration-300 ease-in-out text-gray-200 hover:text-green-500"
+                href="{{ auth_url }}">Squad Up!</a>
+            {% endif %}
+        </div>
         {% endblock %}
-    </div>
 
     <div class="self-end mx-12 my-8 space-x-8">
         <a class="text-4xl transitions duration-300 ease-in-out text-gray-300 hover:text-green-500"
