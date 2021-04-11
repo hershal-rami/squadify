@@ -45,6 +45,22 @@ def authenticate(f):
 
     return wrapper
 
+def auth_optional(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        cache_handler = spotipy.cache_handler.CacheFileHandler(
+            cache_path=session_cache_path()
+        )
+        auth_manager = spotipy.oauth2.SpotifyOAuth(cache_handler=cache_handler)
+
+        kwargs["sp"] = None
+        if auth_manager.validate_token(cache_handler.get_cached_token()):
+            sp = spotipy.Spotify(auth_manager=auth_manager)
+            kwargs["sp"] = sp
+        return f(*args, **kwargs)
+
+    return wrapper
+
 
 @app.route("/")
 def homepage():
@@ -88,9 +104,9 @@ def sign_out():
 
 
 @app.route("/about")
-@authenticate
+@auth_optional
 def view_about(sp):
-    return render_template("about.html", logged_in=True)
+    return render_template("about.html", logged_in=(sp != None))
 
 
 # Viewing existing squads
@@ -104,10 +120,15 @@ def view_squads(sp):
 
 # Viewing specific squad's playlists
 @app.route("/squads/<uuid:squad_id>")
-@authenticate
+@auth_optional
 def view_squad(squad_id, sp):
+    #TODO Use user's name, not just ID
     squad = db.find_one({"squad_id": str(squad_id)})
-    return render_template("squad.html", logged_in=True, squad=squad, playlist_form=PlaylistForm())
+    leader = (sp != None) and (sp.me()["id"] == squad["user"])
+    return render_template(
+        "squad.html", logged_in=True, squad=squad, playlist_form=PlaylistForm(),
+        leader=leader
+    )
 
 
 class SquadForm(FlaskForm):
@@ -160,7 +181,8 @@ def add_to_squad(squad_id, sp):
 
 
 # Public new playlist for squad
-@app.route("/squads/finish", methods=["GET", "POST"])
+@app.route("/squads/<uuid:squad_id>/finish", methods=["GET", "POST"])
 @authenticate
-def finish_squad(sp):
-    return "Hello, World!"
+def finish_squad(squad_id, sp):
+    squad = db.find_one({"squad_id": str(squad_id)})
+    playlists = []
