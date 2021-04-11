@@ -1,15 +1,14 @@
 {% extends "index.html" %}
 {% block content %}
 <div class="flex flex-col items-center">
-    <form method="POST" action="/squads/new" class="mt-28 flex text-white text-xl">
+    <form method="POST" action="/squads/new" class="mt-28 flex text-white text-xs md:text-xl">
         {{ squad_form.hidden_tag() }}
         {{ squad_form.squad_name(size=80,
-        class="px-10 py-6 rounded-l-md bg-transparent border-t-4 border-l-4
-        border-b-4 hover:border-green-400
-        border-green-500 font-bold",
+        class="w-4/6 md:w-auto px-5 md:px-10 py-3 md:py-6 rounded-l-md bg-transparent border-t-2 border-l-2 border-b-2
+        md:border-t-4 md:border-l-4 md:border-b-4 hover:border-green-400 border-green-500 font-bold",
         placeholder="Squad Name" ) }}
-        <input type="submit" value="Submit"
-            class="px-10 py-6 rounded-r-md bg-transparent border-4 hover:border-green-400 border-green-500 font-bold">
+        <input type="submit" value="Form Squad"
+            class="px-5 md:px-10 py-3 md:py-6 rounded-r-md bg-transparent border-2 md:border-4 hover:border-green-400 border-green-500 font-bold">
     </form>
 </div>
 {% endblock %}
