@@ -68,6 +68,7 @@ def auth_optional(f):
 
 
 @app.route("/")
+@app.route("/about")
 def homepage():
     if not session.get("uuid"):
         # Step 1. Visitor is unknown, give random ID
@@ -88,13 +89,15 @@ def homepage():
         auth_manager.get_access_token(request.args.get("code"))
         return redirect("/")
 
+    template = {"/": "index.html", "/about": "about.html"}[request.path]
+
     if not auth_manager.validate_token(cache_handler.get_cached_token()):
         # Step 2. Display sign in link when no token
         auth_url = auth_manager.get_authorize_url()
-        return render_template("index.html", logged_in=False, auth_url=auth_url)
+        return render_template(template, logged_in=False, auth_url=auth_url)
 
     # Step 4. Signed in, display data
-    return render_template("index.html", logged_in=True)
+    return render_template(template, logged_in=True)
 
 
 @app.route("/sign_out")
@@ -106,12 +109,6 @@ def sign_out():
     except OSError as e:
         print("Error: %s - %s." % (e.filename, e.strerror))
     return redirect("/")
-
-
-@app.route("/about")
-@auth_optional
-def view_about(sp):
-    return render_template("about.html", logged_in=(sp != None))
 
 
 # Viewing existing squads
