@@ -2,6 +2,9 @@ __version__ = "0.1.0"
 
 from functools import wraps
 import os
+from re import S
+from squadify.spotify_api import get_tracks, publish_squad_playlist
+from squadify.make_playlist import Playlist, make_squad_playlist
 from flask import Flask, render_template, session, request, redirect
 from flask_session import Session
 import spotipy
@@ -65,6 +68,7 @@ def auth_optional(f):
 
 
 @app.route("/")
+@app.route("/about")
 def homepage():
     if not session.get("uuid"):
         # Step 1. Visitor is unknown, give random ID
@@ -85,13 +89,15 @@ def homepage():
         auth_manager.get_access_token(request.args.get("code"))
         return redirect("/")
 
+    template = {"/": "index.html", "/about": "about.html"}[request.path]
+
     if not auth_manager.validate_token(cache_handler.get_cached_token()):
         # Step 2. Display sign in link when no token
         auth_url = auth_manager.get_authorize_url()
-        return render_template("index.html", logged_in=False, auth_url=auth_url)
+        return render_template(template, logged_in=False, auth_url=auth_url)
 
     # Step 4. Signed in, display data
-    return render_template("index.html", logged_in=True)
+    return render_template(template, logged_in=True)
 
 
 @app.route("/sign_out")
@@ -103,12 +109,6 @@ def sign_out():
     except OSError as e:
         print("Error: %s - %s." % (e.filename, e.strerror))
     return redirect("/")
-
-
-@app.route("/about")
-@auth_optional
-def view_about(sp):
-    return render_template("about.html", logged_in=(sp != None))
 
 
 # Viewing existing squads
@@ -197,4 +197,9 @@ def add_to_squad(squad_id, sp):
 @authenticate
 def finish_squad(squad_id, sp):
     squad = db.find_one({"squad_id": str(squad_id)})
-    playlists = []
+    playlists = [(playlist["user_name"], playlist["playlist_link"]) for playlist in squad["playlists"]]
+    playlists = [Playlist(name, get_tracks(sp, url)) for name, url in playlists]
+    squad_playlist = make_squad_playlist(playlists)
+    playlist_id = publish_squad_playlist(sp, squad_playlist, squad["squad_name"])
+    return render_template("finish.html", logged_in=True,
+        playlist_url="https://open.spotify.com/playlist/"+playlist_id)
