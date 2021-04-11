@@ -24,14 +24,11 @@ caches_folder = "./.spotify_caches/"
 if not os.path.exists(caches_folder):
     os.makedirs(caches_folder)
 
-
 def session_cache_path():
     return caches_folder + session.get("uuid")
 
-
 client = MongoClient("localhost", 27017)
 db = client["squads"]["squads"]
-
 
 def authenticate(f):
     @wraps(f)
@@ -49,7 +46,6 @@ def authenticate(f):
 
     return wrapper
 
-
 def auth_optional(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
@@ -65,7 +61,6 @@ def auth_optional(f):
         return f(*args, **kwargs)
 
     return wrapper
-
 
 @app.route("/")
 @app.route("/about")
@@ -99,7 +94,6 @@ def homepage():
     # Step 4. Signed in, display data
     return render_template(template, logged_in=True)
 
-
 @app.route("/sign_out")
 def sign_out():
     try:
@@ -110,7 +104,6 @@ def sign_out():
         print("Error: %s - %s." % (e.filename, e.strerror))
     return redirect("/")
 
-
 # Viewing existing squads
 @app.route("/squads")
 @authenticate
@@ -118,7 +111,6 @@ def view_squads(sp):
     return render_template(
         "squads.html", logged_in=True, squads_list=db.find({"user": sp.me()["id"]})
     )
-
 
 # Viewing specific squad's playlists
 @app.route("/squads/<uuid:squad_id>")
@@ -135,15 +127,12 @@ def view_squad(squad_id, sp):
         leader=leader,
     )
 
-
 class SquadForm(FlaskForm):
     squad_name = StringField("Squad Name:")
-
 
 class PlaylistForm(FlaskForm):
     user_name = StringField("User Name:")
     playlist_link = StringField("Playlist Link:")
-
 
 # Create new squad
 @app.route("/squads/new", methods=["GET", "POST"])
@@ -167,7 +156,6 @@ def new_squad(sp):
 
     return render_template("add-squad.html", logged_in=True, squad_form=squad_form)
 
-
 # Add playlist to existing squad
 @app.route("/squads/<uuid:squad_id>/add", methods=["GET", "POST"])
 @authenticate
@@ -190,7 +178,6 @@ def add_to_squad(squad_id, sp):
         )
 
     return redirect(f"/squads/{squad_id}")
-
 
 # Public new playlist for squad
 @app.route("/squads/<uuid:squad_id>/finish", methods=["GET", "POST"])

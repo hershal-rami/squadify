@@ -1,18 +1,15 @@
 import random
 
-
 class Member:
     def __init__(self, name, member_num):
         self.name = name
         self.count = 0
         self.songs = [[] for _ in range(member_num + 1)]
 
-
 class Playlist:
     def __init__(self, name, tracks):
         self.name = name
         self.tracks = tracks
-
 
 def playlists_to_members(playlists):
     # Compute track freqencies
@@ -45,7 +42,6 @@ def playlists_to_members(playlists):
 
     return members
 
-
 # checks if threshold is met for all members
 def thresh_met(members, thresh):
     ret = True
@@ -53,7 +49,6 @@ def thresh_met(members, thresh):
         if member.count < thresh:
             ret = False
     return ret
-
 
 # returns the member with smallest count
 def smallest_count(members):
@@ -64,7 +59,6 @@ def smallest_count(members):
             smallest_member = member
             smallest_count = member.count
     return smallest_member
-
 
 # removes a song from all members, increments count
 def remove(song, level, members, final_playlist):
@@ -87,7 +81,6 @@ def remove(song, level, members, final_playlist):
     # removes members without any songs left
     for i in rem_list:
         members.pop(i)
-
 
 def make_squad_playlist(playlists):
     final_playlist = []
