@@ -4,6 +4,7 @@ import math
 
 SCOPE = "playlist-modify-public"
 TRACK_PULL_LIMIT = 100
+TRACK_PUSH_LIMIT = 20
 
 class Track:
     def __init__(self, track):
@@ -31,5 +32,8 @@ def get_tracks(sp, playlist_link):
 def publish_squad_playlist(sp, playlist, playlist_name):
     user_id = sp.current_user()["id"]
     playlist_id = sp.user_playlist_create(user_id, playlist_name)["id"]
-    sp.user_playlist_add_tracks(user_id, playlist_id, [track.id for track in playlist])
+    tracks = [track.id for track in playlist]
+    for i in range(0, len(tracks), TRACK_PUSH_LIMIT):
+        tracks_subset = tracks[i : min(i + TRACK_PUSH_LIMIT, len(tracks))]
+        sp.user_playlist_add_tracks(user_id, playlist_id, tracks_subset)
     return playlist_id

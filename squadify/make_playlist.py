@@ -84,8 +84,9 @@ def remove(song, level, members, final_playlist):
 
 def make_squad_playlist(playlists):
     final_playlist = []
-    target_playlist_size = (lambda a : sum(a) // len(a))(list((len(playlist.tracks) for playlist in playlists)))
     squad_size = len(playlists)
+    playlist_sizes = [len(playlist.tracks) for playlist in playlists]
+    target_playlist_size = sum(playlist_sizes) / squad_size
 
     # convert playlists array to members 2d array
     members = playlists_to_members(playlists)
