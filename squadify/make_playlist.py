@@ -129,11 +129,15 @@ def make_squad_playlist(playlists):
                 songs_at_level += len(member.songs[curr_level])
         songs_at_level /= curr_level
         if songs_at_level <= MAX_PLAYLIST_SIZE - len(final_playlist):
-            for member in members:
-                while len(member.songs) - 1 == curr_level:
-                    remove(
-                        member.songs[curr_level][0], curr_level, members, final_playlist
-                    )
+            removed = True
+            while removed:
+                removed = False
+                for member in members:
+                    if len(member.songs) - 1 == curr_level:
+                        remove(
+                            member.songs[curr_level][0], curr_level, members, final_playlist
+                        )
+                        removed = True
             curr_level -= 1
         else:
             step2 = False
@@ -141,9 +145,14 @@ def make_squad_playlist(playlists):
             step2 = False
 
     # step3: balances lowest level of songs added
-    if len(members) > 0:
-        while MAX_PLAYLIST_SIZE - len(final_playlist) > 0:
-            member = smallest_count(members)
-            remove(member.songs[-1][0], curr_level, members, final_playlist)
+    while MAX_PLAYLIST_SIZE - len(final_playlist) > 0 and len(members) > 0:
+        print("before", members)
+        for member in members:
+            print([len(level) for level in member.songs])
+        member = smallest_count(members)
+        remove(member.songs[-1][0], curr_level, members, final_playlist)
+        print("after", members)
+        for member in members:
+            print([len(level) for level in member.songs])
 
     return final_playlist
