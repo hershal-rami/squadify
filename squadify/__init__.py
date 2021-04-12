@@ -24,11 +24,14 @@ caches_folder = "./.spotify_caches/"
 if not os.path.exists(caches_folder):
     os.makedirs(caches_folder)
 
+
 def session_cache_path():
     return caches_folder + session.get("uuid")
 
+
 client = MongoClient("localhost", 27017)
 db = client["squads"]["squads"]
+
 
 def authenticate(f):
     @wraps(f)
@@ -46,6 +49,7 @@ def authenticate(f):
 
     return wrapper
 
+
 def auth_optional(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
@@ -62,13 +66,21 @@ def auth_optional(f):
 
     return wrapper
 
+
+def ensure_session(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        if not session.get("uuid"):
+            session["uuid"] = str(uuid.uuid4())
+        return f(*args, **kwargs)
+
+    return wrapper
+
+
 @app.route("/")
 @app.route("/about")
+@ensure_session
 def homepage():
-    if not session.get("uuid"):
-        # Step 1. Visitor is unknown, give random ID
-        session["uuid"] = str(uuid.uuid4())
-
     cache_handler = spotipy.cache_handler.CacheFileHandler(
         cache_path=session_cache_path()
     )
@@ -80,21 +92,23 @@ def homepage():
     )
 
     if request.args.get("code"):
-        # Step 3. Being redirected from Spotify auth page
+        # Step 2. Being redirected from Spotify auth page
         auth_manager.get_access_token(request.args.get("code"))
         return redirect("/")
 
     template = {"/": "index.html", "/about": "about.html"}[request.path]
 
     if not auth_manager.validate_token(cache_handler.get_cached_token()):
-        # Step 2. Display sign in link when no token
+        # Step 1. Display sign in link when no token
         auth_url = auth_manager.get_authorize_url()
         return render_template(template, logged_in=False, auth_url=auth_url)
 
-    # Step 4. Signed in, display data
+    # Step 3. Signed in, display data
     return render_template(template, logged_in=True)
 
+
 @app.route("/sign_out")
+@ensure_session
 def sign_out():
     try:
         # Remove the CACHE file (.cache-test) so that a new user can authorize.
@@ -104,16 +118,20 @@ def sign_out():
         print("Error: %s - %s." % (e.filename, e.strerror))
     return redirect("/")
 
+
 # Viewing existing squads
 @app.route("/squads")
+@ensure_session
 @authenticate
 def view_squads(sp):
     return render_template(
         "squads.html", logged_in=True, squads_list=db.find({"user": sp.me()["id"]})
     )
 
+
 # Viewing specific squad's playlists
 @app.route("/squads/<uuid:squad_id>")
+@ensure_session
 @auth_optional
 def view_squad(squad_id, sp):
     # TODO Use user's name, not just ID
@@ -127,15 +145,19 @@ def view_squad(squad_id, sp):
         leader=leader,
     )
 
+
 class SquadForm(FlaskForm):
     squad_name = StringField("Squad Name:")
+
 
 class PlaylistForm(FlaskForm):
     user_name = StringField("User Name:")
     playlist_link = StringField("Playlist Link:")
 
+
 # Create new squad
 @app.route("/squads/new", methods=["GET", "POST"])
+@ensure_session
 @authenticate
 def new_squad(sp):
     squad_form = SquadForm()
@@ -157,8 +179,10 @@ def new_squad(sp):
 
     return render_template("add-squad.html", logged_in=True, squad_form=squad_form)
 
+
 # Add playlist to existing squad
 @app.route("/squads/<uuid:squad_id>/add", methods=["GET", "POST"])
+@ensure_session
 @authenticate
 def add_to_squad(squad_id, sp):
     playlist_form = PlaylistForm()
@@ -184,14 +208,22 @@ def add_to_squad(squad_id, sp):
 
     return redirect(f"/squads/{squad_id}")
 
+
 # Public new playlist for squad
 @app.route("/squads/<uuid:squad_id>/finish", methods=["GET", "POST"])
+@ensure_session
 @authenticate
 def finish_squad(squad_id, sp):
     squad = db.find_one({"squad_id": str(squad_id)})
-    playlists = [(playlist["user_name"], playlist["playlist_link"]) for playlist in squad["playlists"]]
+    playlists = [
+        (playlist["user_name"], playlist["playlist_link"])
+        for playlist in squad["playlists"]
+    ]
     playlists = [Playlist(name, get_tracks(sp, url)) for name, url in playlists]
     squad_playlist = make_squad_playlist(playlists)
     playlist_id = publish_squad_playlist(sp, squad_playlist, squad["squad_name"])
-    return render_template("finish.html", logged_in=True,
-        playlist_url="https://open.spotify.com/playlist/"+playlist_id)
+    return render_template(
+        "finish.html",
+        logged_in=True,
+        playlist_url="https://open.spotify.com/playlist/" + playlist_id,
+    )
