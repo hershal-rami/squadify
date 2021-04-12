@@ -22,8 +22,9 @@ def playlists_to_members(playlists):
     for playlist in playlists:
         for track in playlist.tracks:
             if track in tracks:
-                tracks[track][0] += 1
-                tracks[track][1].append(playlist.name)
+                if playlist.name not in tracks[track][1]:
+                    tracks[track][0] += 1
+                    tracks[track][1].append(playlist.name)
             else:
                 tracks[track] = [1, [playlist.name]]
 
