@@ -94,10 +94,10 @@ def remove(song, level, members, final_playlist):
 
 def make_squad_playlist(playlists):
     final_playlist = []
-    squad_size = len(playlists)
 
     # convert playlists array to members 2d array
     members = playlists_to_members(playlists)
+    squad_size = len(members)
 
     # pops unnecessary rows from song lists
     rem_list = []
