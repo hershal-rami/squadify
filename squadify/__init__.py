@@ -134,12 +134,11 @@ def view_squads(sp):
 @ensure_session
 @auth_optional
 def view_squad(squad_id, sp):
-    # TODO Use user's name, not just ID
     squad = db.find_one({"squad_id": str(squad_id)})
     leader = (sp != None) and (sp.me()["id"] == squad["user"])
     return render_template(
         "squad.html",
-        logged_in=True,
+        logged_in=(sp != None),
         squad=squad,
         playlist_form=PlaylistForm(),
         leader=leader,
