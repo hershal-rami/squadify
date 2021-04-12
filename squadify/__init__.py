@@ -88,7 +88,7 @@ def homepage():
         scope="playlist-modify-public",
         cache_handler=cache_handler,
         show_dialog=True,
-        redirect_uri="http://localhost:5000",
+        redirect_uri=os.getenv('SPOTIPY_REDIRECT_URI'),
     )
 
     if request.args.get("code"):
