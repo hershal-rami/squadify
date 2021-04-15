@@ -117,8 +117,7 @@ def make_squad_playlist(playlists):
     thresh = MAX_PLAYLIST_SIZE / (2 * squad_size)
     while not thresh_met(members, thresh):
         member = smallest_count(members)
-        remove(member.songs[-1][0], len(member.songs) -
-               1, members, final_playlist)
+        remove(member.songs[-1][0], len(member.songs) - 1, members, final_playlist)
 
     # step2: add most popular songs until reachest smallest level of songs which will be added
     step2 = True
@@ -136,7 +135,10 @@ def make_squad_playlist(playlists):
                 for member in members:
                     if len(member.songs) - 1 == curr_level:
                         remove(
-                            member.songs[curr_level][0], curr_level, members, final_playlist
+                            member.songs[curr_level][0],
+                            curr_level,
+                            members,
+                            final_playlist,
                         )
                         removed = True
             curr_level -= 1

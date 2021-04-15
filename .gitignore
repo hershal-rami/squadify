@@ -3,3 +3,4 @@
 **/.flask_session
 **/.spotify_caches
 assets/node_modules
+.vscode
