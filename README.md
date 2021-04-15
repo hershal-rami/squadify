@@ -1,7 +1,11 @@
 # Squadify
 PARTY TIME!!!
 
-## Building and Running
-1. Install [Poetry](https://python-poetry.org/docs/#installation)
+## Running in Development
+1. Run MongoDB with a database and collection named `squads`
 2. `poetry install`
-3. `FLASK_ENV=development FLASK_APP=squadify poetry run flask run`
+3. Modify `assets/tailwind.config.js` and set `purge.enabled: false`
+4. In `assets`, run `npm run build`
+5. In the Spotify dashboard, get the client ID and secret, and set the direct URI to `http://localhost:5000`
+6. Set the environment variables `SPOTIPY_CLIENT_ID`, `SPOTIPY_CLIENT_SECRET`, and `SPOTIPY_REDIRECT_URI="http://localhost:5000"`
+7. `FLASK_ENV=development FLASK_APP=squadify poetry run flask run`

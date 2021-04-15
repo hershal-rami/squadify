@@ -1,0 +1,14 @@
+{
+  "name": "squadify",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "postcss app.css -o ../squadify/static/app.css"
+  },
+  "dependencies": {
+    "autoprefixer": "^10.2.5",
+    "cssnano": "^5.0.1",
+    "postcss": "^8.2.10",
+    "postcss-cli": "^8.3.1",
+    "tailwindcss": "^2.1.1"
+  }
+}
