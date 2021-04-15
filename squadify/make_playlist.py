@@ -22,8 +22,9 @@ def playlists_to_members(playlists):
     for playlist in playlists:
         for track in playlist.tracks:
             if track in tracks:
-                tracks[track][0] += 1
-                tracks[track][1].append(playlist.name)
+                if playlist.name not in tracks[track][1]:
+                    tracks[track][0] += 1
+                    tracks[track][1].append(playlist.name)
             else:
                 tracks[track] = [1, [playlist.name]]
 
@@ -93,10 +94,10 @@ def remove(song, level, members, final_playlist):
 
 def make_squad_playlist(playlists):
     final_playlist = []
-    squad_size = len(playlists)
 
     # convert playlists array to members 2d array
     members = playlists_to_members(playlists)
+    squad_size = len(members)
 
     # pops unnecessary rows from song lists
     rem_list = []
@@ -128,11 +129,15 @@ def make_squad_playlist(playlists):
                 songs_at_level += len(member.songs[curr_level])
         songs_at_level /= curr_level
         if songs_at_level <= MAX_PLAYLIST_SIZE - len(final_playlist):
-            for member in members:
-                while len(member.songs) - 1 == curr_level:
-                    remove(
-                        member.songs[curr_level][0], curr_level, members, final_playlist
-                    )
+            removed = True
+            while removed:
+                removed = False
+                for member in members:
+                    if len(member.songs) - 1 == curr_level:
+                        remove(
+                            member.songs[curr_level][0], curr_level, members, final_playlist
+                        )
+                        removed = True
             curr_level -= 1
         else:
             step2 = False
@@ -140,9 +145,8 @@ def make_squad_playlist(playlists):
             step2 = False
 
     # step3: balances lowest level of songs added
-    if len(members) > 0:
-        while MAX_PLAYLIST_SIZE - len(final_playlist) > 0:
-            member = smallest_count(members)
-            remove(member.songs[-1][0], curr_level, members, final_playlist)
+    while MAX_PLAYLIST_SIZE - len(final_playlist) > 0 and len(members) > 0:
+        member = smallest_count(members)
+        remove(member.songs[-1][0], curr_level, members, final_playlist)
 
     return final_playlist
