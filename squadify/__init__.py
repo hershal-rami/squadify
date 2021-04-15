@@ -218,9 +218,11 @@ def finish_squad(squad_id, sp):
         (playlist["user_name"], playlist["playlist_link"])
         for playlist in squad["playlists"]
     ]
-    playlists = [Playlist(name, get_tracks(sp, url)) for name, url in playlists]
+    playlists = [Playlist(name, get_tracks(sp, url))
+                 for name, url in playlists]
     squad_playlist = make_squad_playlist(playlists)
-    playlist_id = publish_squad_playlist(sp, squad_playlist, squad["squad_name"])
+    playlist_id = publish_squad_playlist(
+        sp, squad_playlist, squad["squad_name"])
     return render_template(
         "finish.html",
         logged_in=True,
