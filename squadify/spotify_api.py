@@ -1,4 +1,3 @@
-from spotipy.oauth2 import SpotifyOAuth
 import math
 
 SCOPE = "playlist-modify-public"
