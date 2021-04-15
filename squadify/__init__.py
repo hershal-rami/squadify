@@ -88,7 +88,7 @@ def homepage():
         scope="playlist-modify-public",
         cache_handler=cache_handler,
         show_dialog=True,
-        redirect_uri=os.getenv('SPOTIPY_REDIRECT_URI'),
+        redirect_uri=os.getenv("SPOTIPY_REDIRECT_URI"),
     )
 
     if request.args.get("code"):
@@ -225,5 +225,6 @@ def finish_squad(squad_id, sp):
     return render_template(
         "finish.html",
         logged_in=True,
+        squad=squad,
         playlist_url="https://open.spotify.com/playlist/" + playlist_id,
     )
