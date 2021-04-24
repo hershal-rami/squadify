@@ -92,7 +92,7 @@ def remove(song, level, members, final_playlist):
         members.pop(i)
 
 
-def make_squad_playlist(playlists):
+def make_collab(playlists):
     final_playlist = []
 
     # convert playlists array to members 2d array
