@@ -4,8 +4,8 @@ from flask_wtf import FlaskForm
 from functools import wraps
 from pymongo import MongoClient
 from re import S
-from squadify.make_playlist import Playlist, make_collab
-from squadify.spotify_api import get_tracks, publish_collab
+from squadify.make_playlist import Playlist, CollabBuilder
+from squadify.spotify_api_util import get_tracks, publish_collab
 from wtforms import StringField
 import os
 import spotipy
@@ -35,6 +35,7 @@ db = client["squads"]["squads"]
 
 
 # Apply to pages that require the user to be logged into Spotify
+# Methods with this wrapper must take the parameter "spotify_api"
 def authenticate(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
@@ -48,8 +49,8 @@ def authenticate(f):
             return redirect("/")
         else:
             # "Return" spotipy object if logged into Spotify
-            sp = spotipy.Spotify(auth_manager=auth_manager)
-            kwargs["sp"] = sp
+            spotify_api = spotipy.Spotify(auth_manager=auth_manager)
+            kwargs["spotify_api"] = spotify_api
             return f(*args, **kwargs)
 
     return wrapper
@@ -57,6 +58,7 @@ def authenticate(f):
 
 # Apply to pages where Spotify login is optional, but we want to know if they
 # are logged in or not
+# Methods with this wrapper must take the parameter "spotify_api"
 def auth_optional(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
@@ -66,10 +68,10 @@ def auth_optional(f):
         auth_manager = spotipy.oauth2.SpotifyOAuth(cache_handler=cache_handler)
 
         # "Return" spotipy object if logged into Spotify, None otherwise
-        kwargs["sp"] = None
+        kwargs["spotify_api"] = None
         if auth_manager.validate_token(cache_handler.get_cached_token()):
-            sp = spotipy.Spotify(auth_manager=auth_manager)
-            kwargs["sp"] = sp
+            spotify_api = spotipy.Spotify(auth_manager=auth_manager)
+            kwargs["spotify_api"] = spotify_api
         return f(*args, **kwargs)
 
     return wrapper
@@ -135,11 +137,11 @@ def sign_out():
 @app.route("/squads", methods=["GET"])
 @ensure_session
 @authenticate
-def view_squads(sp):
+def view_squads(spotify_api):
     return render_template(
         "squads-list.html",
         logged_in=True,
-        squads_list=db.find({"leader_id": sp.me()["id"]})
+        squads_list=db.find({"leader_id": spotify_api.me()["id"]})
     )
 
 
@@ -147,10 +149,10 @@ def view_squads(sp):
 @app.route("/squads/<uuid:squad_id>", methods=["GET"])
 @ensure_session
 @auth_optional
-def view_squad(squad_id, sp):
+def view_squad(squad_id, spotify_api):
     squad = db.find_one({"squad_id": str(squad_id)})
-    logged_in = (sp != None)
-    is_leader = (logged_in and sp.me()["id"] == squad["leader_id"])
+    logged_in = (spotify_api != None)
+    is_leader = (logged_in and spotify_api.me()["id"] == squad["leader_id"])
     return render_template(
         "squad.html",
         squad=squad,
@@ -173,7 +175,7 @@ class PlaylistForm(FlaskForm):
 @app.route("/squads/new", methods=["GET", "POST"])
 @ensure_session
 @authenticate
-def new_squad(sp):
+def new_squad(spotify_api):
     squad_form = SquadForm()
 
     # Step 2: User pressed "Form Squad" on /squads/new to get here, so we make
@@ -184,8 +186,8 @@ def new_squad(sp):
             dict(
                 squad_id=squad_id,
                 squad_name=squad_form.squad_name.data,
-                leader_id=sp.me()["id"],
-                leader_name=sp.me()["display_name"],
+                leader_id=spotify_api.me()["id"],
+                leader_name=spotify_api.me()["display_name"],
                 playlists=[],
             )
         )
@@ -200,7 +202,7 @@ def new_squad(sp):
 @app.route("/squads/<uuid:squad_id>/add", methods=["POST"])
 @ensure_session
 @authenticate
-def add_to_squad(squad_id, sp):
+def add_to_squad(squad_id, spotify_api):
     playlist_form = PlaylistForm()
 
     # Only try adding a playlist if the user submitted the playlist info
@@ -208,7 +210,7 @@ def add_to_squad(squad_id, sp):
         playlist_link = playlist_form.playlist_link.data
 
         # Alert the user if the playlist link they submit is invalid
-        if sp.playlist(playlist_link) == None:
+        if spotify_api.playlist(playlist_link) == None:
             return redirect("/squads/<uuid:squad_id>/add", invalid_playlist=True)
 
         # Add playlist to squad
@@ -233,15 +235,15 @@ def add_to_squad(squad_id, sp):
 @app.route("/squads/<uuid:squad_id>/finish", methods=["GET"])
 @ensure_session
 @authenticate
-def finish_squad(squad_id, sp):
+def finish_squad(squad_id, spotify_api):
     squad = db.find_one({"squad_id": str(squad_id)})
     playlists = [
         (playlist["user_name"], playlist["playlist_link"])
         for playlist in squad["playlists"]
     ]
-    playlists = [Playlist(name, get_tracks(sp, link)) for name, link in playlists]
-    collab = make_collab(playlists)
-    collab_id = publish_collab(sp, collab, squad["squad_name"])
+    playlists = [Playlist(name, get_tracks(spotify_api, link)) for name, link in playlists]
+    collab = CollabBuilder(playlists).build()
+    collab_id = publish_collab(spotify_api, collab, squad["squad_name"])
     return render_template(
         "finish.html",
         logged_in=True,

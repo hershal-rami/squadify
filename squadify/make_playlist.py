@@ -68,223 +68,207 @@ class Playlist:
         self.tracks = tracks
 
 
-# Return a list of all tracks from the playlists (sorted from most to least
-# popular), list of all the members, and a dictionary containing the number of
-# tracks at each frequency level. Each track is also labeled with which members
-# own it.
-def create_track_list(playlists):
-    global tracks                       # All the tracks from all the playlists
-    global members                      # Names of all the squad members
-    global num_tracks_left_for_freq     # Number of unadded tracks at each frequency
-    global num_tracks_added_for_member  # How many tracks each member has added
+class CollabBuilder:
+    def __init__(self, playlists):
+        # Dictionary mapping a member name to a playlist of tracks
+        self.playlists = playlists
 
-    tracks = []
-    members = set({None})
-    tracks_to_members = dict()
+        # The collaborative playlist we're building
+        self.collab = []
 
-    # For each track, create a set of the members who own it
-    for playlist in playlists:
-        members.add(playlist.member)
-        for track in playlist.tracks:
-            members_of_track = tracks_to_members.setdefault(track, set())
-            members_of_track.add(playlist.member)
-            tracks_to_members[track] = members_of_track
-    
-    # Move those members from the dictionary into each track object
-    # and create the track list
-    for track, members_of_track in tracks_to_members.items():
-        for member in members_of_track:
-            track.add_member(member)
-        tracks.append(track)
-    
-    # Eliminate tracks below the minimum frequency
-    tracks = list(filter(lambda track: track.frequency() >= MIN_FREQUENCY, tracks))
+        # All the tracks from all the playlists
+        self.tracks = []
 
-    # Get a slightly different collab each time it's compiled
-    random.shuffle(tracks)
+        # Names of all the squad members
+        self.members = set({None})
 
-    # Sort the tracks by frequency (number of members owning it)
-    tracks.sort(key=Track.frequency, reverse=True)
+        # Number of unadded tracks at each frequency
+        self.num_tracks_left_for_freq = None
+        
+        # How many tracks each member has added
+        self.num_tracks_added_for_member = None
 
-    num_tracks_left_for_freq = Counter(map(Track.frequency, tracks))
-    num_tracks_added_for_member = {member : 0 for member in members}
+        # Each member's most popular track
+        self.most_popular_track_of_member = None
+
+    # Return a list of all tracks from the playlists (sorted from most to least
+    # popular), list of all the members, and a dictionary containing the number of
+    # tracks at each frequency level. Each track is also labeled with which members
+    # own it.
+    def __create_track_list(self):
+        # For each track, create a set of the members who own it
+        tracks_to_members = dict()
+        for playlist in self.playlists:
+            self.members.add(playlist.member)
+            for track in playlist.tracks:
+                members_of_track = tracks_to_members.setdefault(track, set())
+                members_of_track.add(playlist.member)
+                tracks_to_members[track] = members_of_track
+        
+        # Move those members from the dictionary into each track object
+        # and create the track list
+        for track, members_of_track in tracks_to_members.items():
+            for member in members_of_track:
+                track.add_member(member)
+            self.tracks.append(track)
+        
+        # Eliminate tracks below the minimum frequency
+        self.tracks = list(filter(lambda track: track.frequency() >= MIN_FREQUENCY, self.tracks))
+
+        # Get a slightly different collab each time it's compiled
+        random.shuffle(self.tracks)
+
+        # Sort the tracks by frequency (number of members owning it)
+        self.tracks.sort(key=Track.frequency, reverse=True)
+
+        self.num_tracks_left_for_freq = Counter(map(Track.frequency, self.tracks))
+        self.num_tracks_added_for_member = {member : 0 for member in self.members}
 
 
-# Have each track point to the previous and next one in the list of all tracks.
-# Also, for each track, for each member, point to the previous/next track in the
-# list that this member owns.
-def populate_linkedness():
-    global tracks
-    global members
-    global most_popular_track_of_member
+    # Have each track point to the previous and next one in the list of all tracks.
+    # Also, for each track, for each member, point to the previous/next track in the
+    # list that this member owns.
+    def __populate_linkedness(self):
+        # Stores the previous track owned by each member
+        prev_track_of_member = {member: None for member in self.members}
 
-    # Stores the previous track owned by each member
-    prev_track_of_member = {member: None for member in members}
+        # Stores the track at the top of the list for each member
+        self.most_popular_track_of_member = {member: None for member in self.members}
 
-    # Stores the track at the top of the list for each member
-    most_popular_track_of_member = {member: None for member in members}
+        # Link each track to the previous track owned by each member
+        for track in self.tracks:
+            for member in track.members:
+                
+                # Set this track's previous
+                track.set_prev(member, prev_track_of_member[member])
 
-    # Link each track to the previous track owned by each member
-    for track in tracks:
+                if prev_track_of_member[member] is None:
+                    # This is the first track we've seen from this member
+                    self.most_popular_track_of_member[member] = track
+                else:
+                    # Set the previous track's next
+                    prev_track_of_member[member].set_next(member, track)
+                
+                # Update the previous track
+                prev_track_of_member[member] = track
+
+
+    # Add track to the collab and remove it from the track list
+    def __consume_track(self, track):
+        # Add the track to the collab
+        self.collab.append(track)
+
+        # This track's frequency now has one less track
+        self.num_tracks_left_for_freq[track.frequency()] -= 1
+
+        # It might have no tracks left now; if so, remove it from the dict
+        self.num_tracks_left_for_freq = +self.num_tracks_left_for_freq
+
+        # Update linkedness for each member
         for member in track.members:
             
-            # Set this track's previous
-            track.set_prev(member, prev_track_of_member[member])
+            # This member just got a track in the collab
+            self.num_tracks_added_for_member[member] += 1
 
-            if prev_track_of_member[member] is None:
-                # This is the first track we've seen from this member
-                most_popular_track_of_member[member] = track
+            # Essentially removing a node of a linked list
+            if track.get_prev(member) is None:
+                # The track being removed was this member's most popular track
+                # Removing the head of a linked list
+                self.most_popular_track_of_member[member] = track.get_next(member)
             else:
-                # Set the previous track's next
-                prev_track_of_member[member].set_next(member, track)
-            
-            # Update the previous track
-            prev_track_of_member[member] = track
+                # Removing a node from the middle of a linked list
+                track.get_prev(member).set_next(member, track.get_next(member))
+            # Either way, update previous of next, unless there is no next
+            if track.get_next(member) is not None:
+                track.get_next(member).set_prev(member, track.get_prev(member))
 
 
-# Add track to the collab and remove it from the track list
-def consume_track(track):
-    global collab
-    global num_tracks_left_for_freq
-    global num_tracks_added_for_member
-    global most_popular_track_of_member
+    # Add the given member's most popular track to the collab and remove it from the
+    # track list
+    # Return true if successful, false if this member has no tracks left
+    def __consume_most_popular_track_of_member(self, member):
+        # This member has no more tracks
+        if self.most_popular_track_of_member[member] == None:
+            return False
 
-    # Add the track to the collab
-    collab.append(track)
-
-    # This track's frequency now has one less track
-    num_tracks_left_for_freq[track.frequency()] -= 1
-
-    # It might have no tracks left now; if so, remove it from the dict
-    num_tracks_left_for_freq = +num_tracks_left_for_freq
-
-    # Update linkedness for each member
-    for member in track.members:
+        self.__consume_track(self.most_popular_track_of_member[member])
         
-        # This member just got a track in the collab
-        num_tracks_added_for_member[member] += 1
-
-        # Essentially removing a node of a linked list
-        if track.get_prev(member) is None:
-            # The track being removed was this member's most popular track
-            # Removing the head of a linked list
-            most_popular_track_of_member[member] = track.get_next(member)
-        else:
-            # Removing a node from the middle of a linked list
-            track.get_prev(member).set_next(member, track.get_next(member))
-        # Either way, update previous of next, unless there is no next
-        if track.get_next(member) is not None:
-            track.get_next(member).set_prev(member, track.get_prev(member))
+        return True
 
 
-# Add the given member's most popular track to the collab and remove it from the
-# track list
-# Return true if successful, false if this member has no tracks left
-def consume_most_popular_track_of_member(member):
-    global most_popular_track_of_member
-
-    # This member has no more tracks
-    if most_popular_track_of_member[member] == None:
-        return False
-
-    consume_track(most_popular_track_of_member[member])
-    
-    return True
-
-
-# Add all tracks of a given freqency to the collab and remove them all from the
-# track list
-# Return true if the entire freqency could be added, false if doing so exceeds
-# the max collab size
-def consume_highest_frequency():
-    global num_tracks_left_for_freq
-    global collab
-
-    # No tracks are left
-    if len(num_tracks_left_for_freq) == 0:
-        return False
-    
-    # Number of tracks at the highest frequency level remaining
-    count_of_highest_freq = \
-        sorted(num_tracks_left_for_freq.items(), key=lambda item: item[0])[-1][1]
-    
-    # Adding all of the tracks would put us over the limit
-    if count_of_highest_freq + len(collab) > MAX_COLLAB_SIZE:
-        return False
-    
-    # Consume all tracks in the highest frequency level
-    for _ in range(count_of_highest_freq):
-        consume_track(get_most_popular_track())
-    
-    return True
+    # Add all tracks of a given freqency to the collab and remove them all from the
+    # track list
+    # Return true if the entire freqency could be added, false if doing so exceeds
+    # the max collab size
+    def __consume_highest_frequency(self):
+        # No tracks are left
+        if len(self.num_tracks_left_for_freq) == 0:
+            return False
+        
+        # Number of tracks at the highest frequency level remaining
+        count_of_highest_freq = \
+            sorted(self.num_tracks_left_for_freq.items(), key=lambda item: item[0])[-1][1]
+        
+        # Adding all of the tracks would put us over the limit
+        if count_of_highest_freq + len(self.collab) > MAX_COLLAB_SIZE:
+            return False
+        
+        # Consume all tracks in the highest frequency level
+        for _ in range(count_of_highest_freq):
+            self.__consume_track(self.__get_most_popular_track())
+        
+        return True
 
 
-# Return the track at the top of the track list that hasn't been added yet
-def get_most_popular_track():
-    global most_popular_track_of_member
-
-    return most_popular_track_of_member[None]
+    # Return the track at the top of the track list that hasn't been added yet
+    def __get_most_popular_track(self):
+        return self.most_popular_track_of_member[None]
 
 
-# Return the name of the member with the fewest tracks currently in the collab
-def get_member_with_fewest_tracks_added():
-    global num_tracks_added_for_member
-
-    return min(num_tracks_added_for_member, key=num_tracks_added_for_member.get)
+    # Return the name of the member with the fewest tracks currently in the collab
+    def __get_member_with_fewest_tracks_added(self):
+        return min(self.num_tracks_added_for_member, key=self.num_tracks_added_for_member.get)
 
 
-# Return the number of squad members
-# Minus one to exclude the dummy
-def get_number_of_members():
-    global members
-
-    return len(members) - 1
+    # Return the number of squad members
+    # Minus one to exclude the dummy
+    def __get_number_of_members(self):
+        return len(self.members) - 1
 
 
-# Make sure each member reaches a minimum threshold of tracks in the collab
-# Give up on a member if they don't have enough tracks to reach the threshold
-def give_members_minimum_share():
-    global tracks
-    global members
-    global num_tracks_added_for_member
-
-    min_tracks_per_member = int(MAX_COLLAB_SIZE / get_number_of_members() * MIN_SHARE_FACTOR)
-    for member in members:
-        num_tracks_needed = min_tracks_per_member - num_tracks_added_for_member[member]
-        for i in range(num_tracks_needed):
-            if not consume_most_popular_track_of_member(member):
-                break   # This member has no songs left
+    # Make sure each member reaches a minimum threshold of tracks in the collab
+    # Give up on a member if they don't have enough tracks to reach the threshold
+    def __give_members_minimum_share(self):
+        min_tracks_per_member = int(MAX_COLLAB_SIZE / self.__get_number_of_members() * MIN_SHARE_FACTOR)
+        for member in self.members:
+            num_tracks_needed = min_tracks_per_member - self.num_tracks_added_for_member[member]
+            for i in range(num_tracks_needed):
+                if not self.__consume_most_popular_track_of_member(member):
+                    break   # This member has no songs left
 
 
-# Consume the highest frequencies until one frequency can't be added entirely
-# without exceeding the max collab size or no tracks are left
-def add_all_of_highest_frequencies():
-    while (consume_highest_frequency()):
-        pass
+    # Consume the highest frequencies until one frequency can't be added entirely
+    # without exceeding the max collab size or no tracks are left
+    def __add_all_of_highest_frequencies(self):
+        while (self.__consume_highest_frequency()):
+            pass
 
 
-# Fill the rest of the playlist by repeatedly taking the most popular track of
-# the member with the least tracks added
-def fill_collab_with_unpopular_members():
-    global collab
-    global num_tracks_left_for_freq
-    global most_popular_track_of_member
-
-    # Add to the collab size max or the number of tracks left, whichever is smaller
-    num_songs_to_add = min(MAX_COLLAB_SIZE - len(collab), sum(num_tracks_left_for_freq.values()))
-    for _ in range(num_songs_to_add):
-        consume_track(most_popular_track_of_member[get_member_with_fewest_tracks_added()])
+    # Fill the rest of the playlist by repeatedly taking the most popular track of
+    # the member with the least tracks added
+    def __fill_collab_with_unpopular_members(self):
+        # Add to the collab size max or the number of tracks left, whichever is smaller
+        num_songs_to_add = min(MAX_COLLAB_SIZE - len(self.collab), sum(self.num_tracks_left_for_freq.values()))
+        for _ in range(num_songs_to_add):
+            self.__consume_track(self.most_popular_track_of_member[self.__get_member_with_fewest_tracks_added()])
 
 
-# Make a collaborative playlist out of the playlists of each squad member
-def make_collab(playlists):
-    global collab
-    collab = []
+    # Make a collaborative playlist out of the playlists of each squad member
+    def build(self):
+        self.__create_track_list()
+        self.__populate_linkedness()
+        self.__give_members_minimum_share()
+        self.__add_all_of_highest_frequencies()
+        self.__fill_collab_with_unpopular_members()
 
-    create_track_list(playlists)
-    populate_linkedness()
-    give_members_minimum_share()
-    add_all_of_highest_frequencies()
-    fill_collab_with_unpopular_members()
-
-    return collab
+        return self.collab
