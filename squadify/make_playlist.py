@@ -122,7 +122,7 @@ class CollabBuilder:
         self.tracks.sort(key=Track.frequency, reverse=True)
 
         self.num_tracks_left_for_freq = Counter(map(Track.frequency, self.tracks))
-        self.num_tracks_added_for_member = {member : 0 for member in self.members}
+        self.num_tracks_added_for_member = {member: 0 for member in self.members}
 
 
     # Have each track point to the previous and next one in the list of all tracks.
@@ -206,8 +206,7 @@ class CollabBuilder:
             return False
         
         # Number of tracks at the highest frequency level remaining
-        count_of_highest_freq = \
-            sorted(self.num_tracks_left_for_freq.items(), key=lambda item: item[0])[-1][1]
+        count_of_highest_freq = self.num_tracks_left_for_freq[self.__get_highest_frequency()]
         
         # Adding all of the tracks would put us over the limit
         if count_of_highest_freq + len(self.collab) > MAX_COLLAB_SIZE:
@@ -225,16 +224,16 @@ class CollabBuilder:
         return self.most_popular_track_of_member[None]
 
 
-    # Return the name of the member with the fewest tracks currently in the collab
-    def __get_member_with_fewest_tracks_added(self):
-        return min(self.num_tracks_added_for_member, key=self.num_tracks_added_for_member.get)
+    # Return the highest frequency that still has tracks remaining to be added
+    def __get_highest_frequency(self):
+        return self.__get_most_popular_track().frequency()
 
 
     # Return the number of squad members
     # Minus one to exclude the dummy
     def __get_number_of_members(self):
         return len(self.members) - 1
-
+    
 
     # Make sure each member reaches a minimum threshold of tracks in the collab
     # Give up on a member if they don't have enough tracks to reach the threshold
@@ -254,13 +253,33 @@ class CollabBuilder:
             pass
 
 
-    # Fill the rest of the playlist by repeatedly taking the most popular track of
-    # the member with the least tracks added
-    def __fill_collab_with_unpopular_members(self):
-        # Add to the collab size max or the number of tracks left, whichever is smaller
-        num_songs_to_add = min(MAX_COLLAB_SIZE - len(self.collab), sum(self.num_tracks_left_for_freq.values()))
-        for _ in range(num_songs_to_add):
-            self.__consume_track(self.most_popular_track_of_member[self.__get_member_with_fewest_tracks_added()])
+    # Fill the rest of the playlist with tracks from the highest frequency level
+    # remaining, prioritizing the tracks of members with the least songs added
+    def __add_some_of_last_frequency(self):
+        # The highest frequency with tracks remaining
+        last_frequency = self.__get_highest_frequency()
+
+        # Filter for only members with tracks at the highest frequency
+        filtered_members = self.members.copy()
+
+        # Iterate until the collab has reached its max size
+        while (len(self.collab) < MAX_COLLAB_SIZE):
+
+            # Find the member with the fewest tracks added to the collab
+            filtered_track_counts = { member: self.num_tracks_added_for_member[member] for member in filtered_members }
+            least_popular_member = min(filtered_track_counts, key=filtered_track_counts.get)
+
+            # Get that member's most popular track
+            track = self.most_popular_track_of_member[least_popular_member]
+
+            # If that member has no tracks left or the track is not in the
+            # highest frequency level, remove this member from consideration
+            if (track == None or track.frequency() < last_frequency):
+                filtered_members.remove(least_popular_member)
+                continue
+            
+            # Otherwise, consume the track
+            self.__consume_track(track)
 
 
     # Make a collaborative playlist out of the playlists of each squad member
@@ -269,6 +288,6 @@ class CollabBuilder:
         self.__populate_linkedness()
         self.__give_members_minimum_share()
         self.__add_all_of_highest_frequencies()
-        self.__fill_collab_with_unpopular_members()
+        self.__add_some_of_last_frequency()
 
         return self.collab
