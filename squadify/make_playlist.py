@@ -202,7 +202,7 @@ class CollabBuilder:
     # the max collab size
     def __consume_highest_frequency(self):
         # No tracks are left
-        if len(self.num_tracks_left_for_freq) == 0:
+        if self.__no_more_tracks():
             return False
         
         # Number of tracks at the highest frequency level remaining
@@ -217,6 +217,11 @@ class CollabBuilder:
             self.__consume_track(self.__get_most_popular_track())
         
         return True
+    
+
+    # Return true if all available tracks have been added to the collab already
+    def __no_more_tracks(self):
+        return len(self.num_tracks_left_for_freq) == 0
 
 
     # Return the track at the top of the track list that hasn't been added yet
@@ -256,6 +261,10 @@ class CollabBuilder:
     # Fill the rest of the playlist with tracks from the highest frequency level
     # remaining, prioritizing the tracks of members with the least songs added
     def __add_some_of_last_frequency(self):
+        # No tracks are left
+        if self.__no_more_tracks():
+            return False
+
         # The highest frequency with tracks remaining
         last_frequency = self.__get_highest_frequency()
 
