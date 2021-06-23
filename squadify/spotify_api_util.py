@@ -2,15 +2,19 @@ import math
 from squadify.make_playlist import Track
 
 TRACK_PULL_LIMIT = 100  # Number of tracks the Spotify API lets you query at once
-TRACK_PUSH_LIMIT = 20   # Number of tracks the Spotify API lets you add at once
+TRACK_PUSH_LIMIT = 20  # Number of tracks the Spotify API lets you add at once
 
 
 # Return a list of all the tracks from a playlist
 def get_tracks(spotify_api, playlist_link):
-    num_tracks = spotify_api.playlist(playlist_link, fields=["tracks(total)"])["tracks"]["total"]
+    num_tracks = spotify_api.playlist(playlist_link, fields=["tracks(total)"])[
+        "tracks"
+    ]["total"]
     tracks = []
     for i in range(math.ceil(num_tracks / TRACK_PULL_LIMIT)):
-        playlist_items = spotify_api.playlist_items(playlist_link, offset=i*TRACK_PULL_LIMIT)
+        playlist_items = spotify_api.playlist_items(
+            playlist_link, offset=i * TRACK_PULL_LIMIT
+        )
         for item in playlist_items["items"]:
             # Don't add tracks with missing data
             if item["track"] == None or item["track"]["id"] == None:

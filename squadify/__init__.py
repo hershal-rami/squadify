@@ -89,16 +89,15 @@ def ensure_session(f):
     return wrapper
 
 
-# Homepage and About page
+# Homepage
 @app.route("/", methods=["GET"])
-@app.route("/about", methods=["GET"])
 @ensure_session
 def homepage():
     cache_handler = spotipy.cache_handler.CacheFileHandler(
         cache_path=spotify_cache_path()
     )
     auth_manager = spotipy.oauth2.SpotifyOAuth(
-        scope="playlist-modify-public", # We can edit the user's playlists
+        scope="playlist-modify-public",  # We can edit the user's playlists
         cache_handler=cache_handler,
         show_dialog=True,
         redirect_uri=os.getenv("SPOTIPY_REDIRECT_URI"),
@@ -109,15 +108,13 @@ def homepage():
         auth_manager.get_access_token(request.args.get("code"))
         return redirect("/")
 
-    template = {"/": "index.html", "/about": "about.html"}[request.path]
-
     if not auth_manager.validate_token(cache_handler.get_cached_token()):
         # Step 1. Not signed in, show "Sign In" button
         auth_url = auth_manager.get_authorize_url()
-        return render_template(template, logged_in=False, auth_url=auth_url)
+        return render_template("index.html", logged_in=False, auth_url=auth_url)
 
     # Step 3. Signed in, show "Sign Out" button
-    return render_template(template, logged_in=True)
+    return render_template("index.html", logged_in=True)
 
 
 # User clicked "Sign Out" button
@@ -141,7 +138,7 @@ def view_squads(spotify_api):
     return render_template(
         "squads-list.html",
         logged_in=True,
-        squads_list=db.find({"leader_id": spotify_api.me()["id"]})
+        squads_list=db.find({"leader_id": spotify_api.me()["id"]}),
     )
 
 
@@ -151,8 +148,8 @@ def view_squads(spotify_api):
 @auth_optional
 def view_squad(squad_id, spotify_api):
     squad = db.find_one({"squad_id": str(squad_id)})
-    logged_in = (spotify_api != None)
-    is_leader = (logged_in and spotify_api.me()["id"] == squad["leader_id"])
+    logged_in = spotify_api != None
+    is_leader = logged_in and spotify_api.me()["id"] == squad["leader_id"]
     return render_template(
         "squad.html",
         squad=squad,
@@ -241,7 +238,9 @@ def finish_squad(squad_id, spotify_api):
         (playlist["user_name"], playlist["playlist_link"])
         for playlist in squad["playlists"]
     ]
-    playlists = [Playlist(name, get_tracks(spotify_api, link)) for name, link in playlists]
+    playlists = [
+        Playlist(name, get_tracks(spotify_api, link)) for name, link in playlists
+    ]
     collab = CollabBuilder(playlists).build()
     collab_id = publish_collab(spotify_api, collab, squad["squad_name"])
     return render_template(

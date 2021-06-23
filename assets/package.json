@@ -5,10 +5,11 @@
     "build": "postcss app.css -o ../squadify/static/app.css"
   },
   "dependencies": {
+    "@tailwindcss/forms": "0.3.x",
     "autoprefixer": "10.2.x",
     "cssnano": "5.0.x",
     "postcss": "8.3.x",
     "postcss-cli": "8.3.x",
-    "tailwindcss": "2.1.x"
+    "tailwindcss": "2.2.x"
   }
 }
