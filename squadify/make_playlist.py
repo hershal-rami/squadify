@@ -26,27 +26,27 @@ class Track:
         self.artists = frozenset([artist["name"] for artist in track["artists"]])
         self.id = track["id"]
         self.members = {None: Node()}   # Dummy member that owns all tracks
-    
+
     # Record that this track is owned by another member
     def add_member(self, member):
         self.members[member] = Node()
-    
+
     # Return the number of members that own this track
     def frequency(self):
         return len(self.members) - 1    # Don't count the dummy
-    
+
     # Get the next track owned by a member after this one
     def get_next(self, member):
         return self.members[member].next
-    
+
     # Get the previous track owned by a member before this one
     def get_prev(self, member):
         return self.members[member].prev
-    
+
     # Set the next track owned by a member after this one
     def set_next(self, member, track):
         self.members[member].next = track
-    
+
     # Set the previous track owned by a member before this one
     def set_prev(self, member, track):
         self.members[member].prev = track
@@ -84,7 +84,7 @@ class CollabBuilder:
 
         # Number of unadded tracks at each frequency
         self.num_tracks_left_for_freq = None
-        
+
         # How many tracks each member has added
         self.num_tracks_added_for_member = None
 
@@ -104,14 +104,14 @@ class CollabBuilder:
                 members_of_track = tracks_to_members.setdefault(track, set())
                 members_of_track.add(playlist.member)
                 tracks_to_members[track] = members_of_track
-        
+
         # Move those members from the dictionary into each track object
         # and create the track list
         for track, members_of_track in tracks_to_members.items():
             for member in members_of_track:
                 track.add_member(member)
             self.tracks.append(track)
-        
+
         # Eliminate tracks below the minimum frequency
         self.tracks = list(filter(lambda track: track.frequency() >= MIN_FREQUENCY, self.tracks))
 
@@ -138,7 +138,7 @@ class CollabBuilder:
         # Link each track to the previous track owned by each member
         for track in self.tracks:
             for member in track.members:
-                
+
                 # Set this track's previous
                 track.set_prev(member, prev_track_of_member[member])
 
@@ -148,7 +148,7 @@ class CollabBuilder:
                 else:
                     # Set the previous track's next
                     prev_track_of_member[member].set_next(member, track)
-                
+
                 # Update the previous track
                 prev_track_of_member[member] = track
 
@@ -166,7 +166,7 @@ class CollabBuilder:
 
         # Update linkedness for each member
         for member in track.members:
-            
+
             # This member just got a track in the collab
             self.num_tracks_added_for_member[member] += 1
 
@@ -192,7 +192,7 @@ class CollabBuilder:
             return False
 
         self.__consume_track(self.most_popular_track_of_member[member])
-        
+
         return True
 
 
@@ -204,20 +204,20 @@ class CollabBuilder:
         # No tracks are left
         if self.__no_more_tracks():
             return False
-        
+
         # Number of tracks at the highest frequency level remaining
         count_of_highest_freq = self.num_tracks_left_for_freq[self.__get_highest_frequency()]
-        
+
         # Adding all of the tracks would put us over the limit
         if count_of_highest_freq + len(self.collab) > MAX_COLLAB_SIZE:
             return False
-        
+
         # Consume all tracks in the highest frequency level
         for _ in range(count_of_highest_freq):
             self.__consume_track(self.__get_most_popular_track())
-        
+
         return True
-    
+
 
     # Return true if all available tracks have been added to the collab already
     def __no_more_tracks(self):
@@ -238,7 +238,7 @@ class CollabBuilder:
     # Minus one to exclude the dummy
     def __get_number_of_members(self):
         return len(self.members) - 1
-    
+
 
     # Make sure each member reaches a minimum threshold of tracks in the collab
     # Give up on a member if they don't have enough tracks to reach the threshold
@@ -286,7 +286,7 @@ class CollabBuilder:
             if (track == None or track.frequency() < last_frequency):
                 filtered_members.remove(least_popular_member)
                 continue
-            
+
             # Otherwise, consume the track
             self.__consume_track(track)
 

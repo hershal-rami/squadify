@@ -1,77 +1,61 @@
-<!doctype html>
-
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="utf-8">
     <title>{% block title %}Squadify{% endblock %}</title>
     <meta name="description" content="Merge your squad's music tastes into a single playlist!">
-    <meta name="author" content="Conscientious Objectors">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='app.css')}}">
     <link rel="icon" type="image/png" href="{{url_for('static', filename='favicon.png')}}" />
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:ital,wght@0,400;0,700;1,500&display=swap"
-        rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 
-<body class="h-screen mx-auto container flex flex-col"
-    style="font-family: 'Prompt', sans-serif; background-color: #0d0d0d; opacity: 1; background-image: repeating-radial-gradient( circle at 0 0, transparent 0, #0d0d0d 34px ), repeating-linear-gradient( #2f323055, #2f3230 );">
-    <div class="mx-4 md:mx-0 mt-8 md:mb-8 flex items-center">
-        <a href="/">
-            <img class="h-10 md:h-36" src="{{url_for('static', filename='logo.png')}}">
-        </a>
-        <div class="text-l md:text-4xl ml-auto space-x-2 md:space-x-8">
-            {% if logged_in %}
-            <a class="transitions duration-300 ease-in-out text-gray-300 hover:text-green-500" href="/squads">Squads</a>
-            <a class="px-3 md:px-6 py-2 md:py-4 rounded-md border-2 md:border-4 border-green-500 hover:border-green-400 transitions duration-300 ease-in-out text-gray-300 hover:text-green-500"
-                href="/sign_out">Sign Out</a>
-            {% else %}
-            <a class="px-3 md:px-6 py-2 md:py-4 rounded-md border-2 md:border-4 border-green-500 hover:border-green-400 transitions duration-300 ease-in-out text-gray-300 hover:text-green-500"
-                href="{{ auth_url }}">Sign In</a>
-            {% endif %}
+<body class="h-screen background-texture" style="font-family: 'Inter', sans-serif;">
+    <!-- Header -->
+    <div class="p-4 bg-gray-800 bg-opacity-80 shadow-md">
+        <div class="container mx-auto flex items-center justify-between">
+            <a href="/">
+                <img class="h-8 md:h-12" src="{{url_for('static', filename='logo.png')}}">
+            </a>
+            <div class="flex items-center space-x-2 md:space-x-6">
+                {% if logged_in %}
+                <a class="nav-button" href="/squads">Squads</a>
+                <a class="nav-button" href="/sign_out">Sign Out</a>
+                {% else %}
+                <a class="nav-button" href="{{ auth_url }}">Sign In</a>
+                {% endif %}
+                <a href="https://github.com/hershal-rami/squadify" target="_blank">
+                    <svg class="w-8 md:w-10" viewBox="0 0 16 16" version="1.1">
+                        <path fill-rule="evenodd"
+                            d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z">
+                        </path>
+                    </svg>
+                </a>
+            </div>
         </div>
     </div>
 
-    <div class="flex-grow">
+    <!-- Content -->
+    <div class="p-4 container mx-auto mt-16 ">
         {% block content %}
-        <div class="ml-14 md:ml-56 flex flex-col">
-            <p class="w-10/12 md:w-auto mt-8 md:mt-16 text-2xl md:text-4xl text-gray-100 w-5/12">Can't agree on what to
-                listen
-                to?</p>
-            <p class="w-10/12 md:w-auto mt-2 text-xl md:text-3xl text-gray-100 w-5/12">Merge your playlists with the
-                squad and never argue over who gets the aux again!</p>
-            <p class="w-10/12 md:w-auto mt-8 md:mt-16 text-l md:text-2xl text-gray-100 w-9/12">Connect your Spotify
-                account and
-                create a
-                squad,
-                then share
-                your unique URL to let everyone add their favorite playlists.</p>
-            <p class="w-10/12 md:w-auto my-2 text-l md:text-2xl text-gray-100 w-9/12">Our algorithm will
-                merge
-                your playlists to maximize diversity, and automatically add it to your Spotify account.</p>
-            <p class="w-10/12 md:w-auto mt-2 mb-12 md:mb-24 text-l md:text-2xl text-gray-100 w-9/12">Sign in now to
-                get started
-                and Squad
-                Up!</p>
+        <div class="flex flex-col space-y-8 text-lg md:text-3xl font-medium text-gray-800">
+            <p class="text-2xl md:text-5xl font-bold">Can't agree on what to listen to?</p>
+            <p>Merge your playlists with the squad and never argue over who gets the aux again!</p>
+            <p>Connect your Spotify account and create a squad, then share your
+                unique URL to let everyone add their favorite playlists.</p>
+            <p>Our algorithm will merge your playlists to maximize diversity, and
+                automatically add it to your Spotify account.</p>
+            <p>Sign in now to get started and Squad Up!</p>
             {% if logged_in %}
-            <a class="w-40 md:w-80 px-3 md:px-6 py-3 md:py-6 transform transition-transform hover:scale-110 rounded-md border-2 md:border-4 hover:border-green-400 border-green-500 text-center text-2xl md:text-4xl transitions duration-300 ease-in-out text-gray-200 hover:text-green-500"
-                href="/squads/new">Squad Up!</a>
+            <a class="nav-button max-w-max" href="/squads/new">Squad Up!</a>
             {% else %}
-            <a class="w-40 md:w-80 px-3 md:px-6 py-3 md:py-6 transform transition-transform hover:scale-110 rounded-md border-2 md:border-4 hover:border-green-400 border-green-500 text-center text-2xl md:text-4xl transitions duration-300 ease-in-out text-gray-200 hover:text-green-500"
-                href="{{ auth_url }}">Squad Up!</a>
+            <a class="nav-button max-w-max" href="{{ auth_url }}">Squad Up!</a>
             {% endif %}
         </div>
         {% endblock %}
-    </div>
-
-    <div class="self-end mx-6 md:mx-12 mb-4 md:mb-8 space-x-4 md:space-x-8">
-        <a class="text-l md:text-4xl transitions duration-300 ease-in-out text-gray-300 hover:text-green-500"
-            href="/about">About</a>
-        <a class="text-l md:text-4xl transitions duration-300 ease-in-out text-gray-300 hover:text-green-500"
-            href="https://forms.gle/eeT6MctMY8tPQ97k6" target="_blank">Feedback Form</a>
-        <a class="text-l md:text-4xl transitions duration-300 ease-in-out text-gray-300 hover:text-green-500"
-            href="https://github.com/hershal-rami/squadify" target="_blank">GitHub</a>
     </div>
 </body>
 
