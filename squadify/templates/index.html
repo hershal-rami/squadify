@@ -13,13 +13,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 
-<body class="h-screen background-texture" style="font-family: 'Inter', sans-serif;">
+<body class="bg-green-400" style="font-family: 'Inter', sans-serif;">
     <!-- Header -->
-    <div class="p-4 bg-gray-800 bg-opacity-80 shadow-md">
+    <div class="p-4 bg-gray-800 bg-opacity-80 shadow-md md:shadow-lg">
         <div class="container mx-auto flex items-center justify-between">
             <a href="/">
-                <img class="h-8 md:h-12 transform hover:scale-125 transition"
-                    src="{{url_for('static', filename='logo.png')}}">
+                <img class="h-8 md:h-12" src="{{url_for('static', filename='logo.png')}}">
             </a>
             <div class="flex items-center space-x-2 md:space-x-6">
                 {% if logged_in %}
@@ -51,9 +50,9 @@
                 automatically add it to your Spotify account.</p>
             <p>Sign in now to get started and Squad Up!</p>
             {% if logged_in %}
-            <a class="nav-button max-w-max" href="/squads/new">Squad Up!</a>
+            <a class="button max-w-max" href="/squads/new">Squad Up!</a>
             {% else %}
-            <a class="nav-button max-w-max" href="{{ auth_url }}">Squad Up!</a>
+            <a class="button max-w-max" href="{{ auth_url }}">Squad Up!</a>
             {% endif %}
         </div>
         {% endblock %}

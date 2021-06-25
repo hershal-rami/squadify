@@ -2,11 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
-.background-texture {
-    background: #35C7AB;
-    background: linear-gradient(to top left, #35C7AB, #DBDD35);
-}
-
 .nav-button {
     @apply px-3 md:px-6 py-2 md:py-3 rounded-md text-sm md:text-lg font-medium text-gray-200 bg-gray-800 hover:bg-gray-900;
+}
+
+.button {
+    @apply px-3 md:px-6 py-3 rounded-md text-sm md:text-lg font-medium text-gray-200 bg-gray-800 hover:bg-gray-900 bg-opacity-80;
 }
