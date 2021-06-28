@@ -135,10 +135,12 @@ def sign_out():
 @ensure_session
 @authenticate
 def view_squads(spotify_api):
+    query = {"leader_id": spotify_api.me()["id"]}
     return render_template(
         "squads-list.html",
         logged_in=True,
-        squads_list=db.find({"leader_id": spotify_api.me()["id"]}),
+        squads_list=db.find(query),
+        squads_list_length=db.count_documents(query),
     )
 
 
@@ -151,7 +153,7 @@ def view_squad(squad_id, spotify_api):
     logged_in = spotify_api != None
     is_leader = logged_in and spotify_api.me()["id"] == squad["leader_id"]
     return render_template(
-        "squad.html",
+        "squad-page.html",
         squad=squad,
         logged_in=logged_in,
         is_leader=is_leader,
@@ -244,7 +246,7 @@ def finish_squad(squad_id, spotify_api):
     collab = CollabBuilder(playlists).build()
     collab_id = publish_collab(spotify_api, collab, squad["squad_name"])
     return render_template(
-        "finish.html",
+        "finish-squad.html",
         logged_in=True,
         squad=squad,
         collab_link="https://open.spotify.com/playlist/" + collab_id,

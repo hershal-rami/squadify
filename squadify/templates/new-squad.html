@@ -3,7 +3,7 @@
 {% block title %}New Squad - Squadify{% endblock %}
 
 {% block content %}
-<form method="POST" action="/squads/new" class="flex flex-col md:flex-row justify-center">
+<form method="POST" action="/squads/new" class="flex flex-col md:flex-row">
     {{ squad_form.hidden_tag() }}
     {{ squad_form.squad_name(maxlength=40, class="button flex-grow", placeholder="Squad Name") }}
     <input type="submit" value="Form Squad" class="button mt-8 md:mt-0 md:ml-4 self-center">

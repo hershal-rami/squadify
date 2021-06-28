@@ -1,0 +1,35 @@
+{% extends "index.html" %}
+
+{% block title %}{{squad.squad_name}} - Squadify{% endblock %}
+
+{% block content %}
+<div class="flex flex-col items-center space-y-8 font-medium text-gray-800">
+    <div class="flex flex-col items-center space-y-2 md:space-y-4">
+        <p class="text-xl md:text-5xl font-bold">{{squad.squad_name}}</p>
+        <p class="text-lg md:text-2xl">Squad Leader: {{squad.leader_name}}</p>
+        <a class="button" href="/squads/{{squad.squad_id}}/finish">Compile Playlist!</a>
+    </div>
+
+    <div class="flex flex-col space-y-2">
+        {% for playlist in squad.playlists %}
+        <a class="card" href="{{playlist.playlist_link}}">
+            <span>{{playlist.user_name}}:</span>
+            <span class="font-bold text-green-400">{{playlist.playlist_link}}</span>
+        </a>
+        {% endfor %}
+
+        {% if squad.playlists|length == 0 %}
+        <p class="card">Add playlists below!</p>
+        {% endif %}
+    </div>
+
+    <form method="POST" action="/squads/{{squad.squad_id}}/add"
+        class="flex flex-col md:flex-row items-center space-y-2 space-x-4">
+        {{ playlist_form.hidden_tag() }}
+        {{ playlist_form.user_name(maxlength=40, class="button", placeholder="Your Name") }}
+        {{ playlist_form.hidden_tag() }}
+        {{ playlist_form.playlist_link(maxlength=200, class="button", placeholder="Playlist Link") }}
+        <input class="button max-w-max" type="submit" value="Add Your Playlist">
+    </form>
+</div>
+{% endblock %}
