@@ -11,5 +11,5 @@
 }
 
 .card {
-    @apply bg-yellow-200 px-12 md:px-48 py-2 md:py-5 rounded-lg shadow-md;
+    @apply bg-gray-200 bg-opacity-90 px-12 md:px-48 py-2 md:py-5 rounded-lg shadow-md;
 }

@@ -3,9 +3,9 @@ from flask_session import Session
 from flask_wtf import FlaskForm
 from functools import wraps
 from pymongo import MongoClient
-from re import S
 from squadify.make_playlist import Playlist, CollabBuilder
 from squadify.spotify_api_util import get_tracks, publish_collab
+from urllib.parse import urlparse
 from wtforms import StringField
 import os
 import spotipy
@@ -209,10 +209,12 @@ def add_to_squad(squad_id, spotify_api):
         playlist_link = playlist_form.playlist_link.data
 
         # Alert the user if the playlist link they submit is invalid
+        # TODO: Frontend dosen't use this anymore
         if spotify_api.playlist(playlist_link) == None:
             return redirect("/squads/<uuid:squad_id>/add", invalid_playlist=True)
 
         # Add playlist to squad
+        playlist_embed_id = urlparse(playlist_link).path.split("/")[-1]
         user_name = playlist_form.user_name.data
         db.update_one(
             {"squad_id": str(squad_id)},
@@ -220,6 +222,7 @@ def add_to_squad(squad_id, spotify_api):
                 "$push": {
                     "playlists": {
                         "playlist_link": playlist_link,
+                        "playlist_embed_id": playlist_embed_id,
                         "user_name": user_name,
                     }
                 }
@@ -249,5 +252,5 @@ def finish_squad(squad_id, spotify_api):
         "finish-squad.html",
         logged_in=True,
         squad=squad,
-        collab_link="https://open.spotify.com/playlist/" + collab_id,
+        collab_link=f"https://open.spotify.com/playlist/{collab_id}",
     )

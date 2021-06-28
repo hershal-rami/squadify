@@ -4,18 +4,24 @@
 
 {% block content %}
 <div class="flex flex-col items-center space-y-8 font-medium text-gray-800">
-    <div class="flex flex-col items-center space-y-2 md:space-y-4">
-        <p class="text-xl md:text-5xl font-bold">{{squad.squad_name}}</p>
-        <p class="text-lg md:text-2xl">Squad Leader: {{squad.leader_name}}</p>
-        <a class="button" href="/squads/{{squad.squad_id}}/finish">Compile Playlist!</a>
+    <div class="card flex flex-col items-center space-y-2 md:space-y-4">
+        <p class="text-xl md:text-4xl font-bold">{{squad.squad_name}}</p>
+        <p class="text-lg md:text-xl">Squad Leader: {{squad.leader_name}}</p>
+        <a class="button" href="/squads/{{squad.squad_id}}/finish">Compile Squad</a>
     </div>
 
     <div class="flex flex-col space-y-2">
         {% for playlist in squad.playlists %}
-        <a class="card" href="{{playlist.playlist_link}}">
-            <span>{{playlist.user_name}}:</span>
-            <span class="font-bold text-green-400">{{playlist.playlist_link}}</span>
-        </a>
+        <div class="flex flex-col md:flex-row shadow-md">
+            <div
+                class="md:flex-grow flex md:items-center justify-center md:text-xl p-1 md:px-4 md:py-0 rounded-t-lg md:rounded-t-none md:rounded-l-lg bg-gray-200 bg-opacity-90">
+                <p>{{playlist.user_name}}</p>
+            </div>
+            <div class="p-2 md:p-4 rounded-b-lg md:rounded-b-none md:rounded-r-lg bg-gray-200 bg-opacity-70">
+                <iframe src="https://open.spotify.com/embed/playlist/{{playlist.playlist_embed_id}}" width="300"
+                    height="80" frameborder="0" allowtransparency="true" allow="encrypted-media" class=></iframe>
+            </div>
+        </div>
         {% endfor %}
 
         {% if squad.playlists|length == 0 %}
