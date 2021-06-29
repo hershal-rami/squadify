@@ -247,5 +247,5 @@ def finish_squad(squad_id, spotify_api):
         "finish-squad.html",
         logged_in=True,
         squad=squad,
-        collab_link=f"https://open.spotify.com/playlist/{collab_id}",
+        playlist_embed_id=collab_id,
     )
