@@ -113,9 +113,7 @@ class CollabBuilder:
             self.tracks.append(track)
 
         # Eliminate tracks below the minimum frequency
-        self.tracks = list(
-            filter(lambda track: track.frequency() >= MIN_FREQUENCY, self.tracks)
-        )
+        self.tracks = list(filter(lambda track: track.frequency() >= MIN_FREQUENCY, self.tracks))
 
         # Get a slightly different collab each time it's compiled
         random.shuffle(self.tracks)
@@ -204,9 +202,7 @@ class CollabBuilder:
             return False
 
         # Number of tracks at the highest frequency level remaining
-        count_of_highest_freq = self.num_tracks_left_for_freq[
-            self.__get_highest_frequency()
-        ]
+        count_of_highest_freq = self.num_tracks_left_for_freq[self.__get_highest_frequency()]
 
         # Adding all of the tracks would put us over the limit
         if count_of_highest_freq + len(self.collab) > MAX_COLLAB_SIZE:
@@ -238,13 +234,9 @@ class CollabBuilder:
     # Make sure each member reaches a minimum threshold of tracks in the collab
     # Give up on a member if they don't have enough tracks to reach the threshold
     def __give_members_minimum_share(self):
-        min_tracks_per_member = int(
-            MAX_COLLAB_SIZE / self.__get_number_of_members() * MIN_SHARE_FACTOR
-        )
+        min_tracks_per_member = int(MAX_COLLAB_SIZE / self.__get_number_of_members() * MIN_SHARE_FACTOR)
         for member in self.members:
-            num_tracks_needed = (
-                min_tracks_per_member - self.num_tracks_added_for_member[member]
-            )
+            num_tracks_needed = min_tracks_per_member - self.num_tracks_added_for_member[member]
             for i in range(num_tracks_needed):
                 if not self.__consume_most_popular_track_of_member(member):
                     break  # This member has no songs left
@@ -272,13 +264,8 @@ class CollabBuilder:
         while len(self.collab) < MAX_COLLAB_SIZE:
 
             # Find the member with the fewest tracks added to the collab
-            filtered_track_counts = {
-                member: self.num_tracks_added_for_member[member]
-                for member in filtered_members
-            }
-            least_popular_member = min(
-                filtered_track_counts, key=filtered_track_counts.get
-            )
+            filtered_track_counts = {member: self.num_tracks_added_for_member[member] for member in filtered_members}
+            least_popular_member = min(filtered_track_counts, key=filtered_track_counts.get)
 
             # Get that member's most popular track
             track = self.most_popular_track_of_member[least_popular_member]

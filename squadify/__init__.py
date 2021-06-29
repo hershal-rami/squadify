@@ -239,13 +239,8 @@ def add_to_squad(squad_id, spotify_api):
 @authenticate
 def finish_squad(squad_id, spotify_api):
     squad = db.find_one({"squad_id": str(squad_id)})
-    playlists = [
-        (playlist["user_name"], playlist["playlist_link"])
-        for playlist in squad["playlists"]
-    ]
-    playlists = [
-        Playlist(name, get_tracks(spotify_api, link)) for name, link in playlists
-    ]
+    playlists = [(playlist["user_name"], playlist["playlist_link"]) for playlist in squad["playlists"]]
+    playlists = [Playlist(name, get_tracks(spotify_api, link)) for name, link in playlists]
     collab = CollabBuilder(playlists).build()
     collab_id = publish_collab(spotify_api, collab, squad["squad_name"])
     return render_template(
