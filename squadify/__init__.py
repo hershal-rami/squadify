@@ -3,9 +3,9 @@ from flask_session import Session
 from flask_wtf import FlaskForm
 from functools import wraps
 from pymongo import MongoClient
-from re import S
 from squadify.make_playlist import Playlist, CollabBuilder
 from squadify.spotify_api_util import get_tracks, publish_collab
+from urllib.parse import urlparse
 from wtforms import StringField
 import os
 import spotipy
@@ -89,16 +89,15 @@ def ensure_session(f):
     return wrapper
 
 
-# Homepage and About page
+# Homepage
 @app.route("/", methods=["GET"])
-@app.route("/about", methods=["GET"])
 @ensure_session
 def homepage():
     cache_handler = spotipy.cache_handler.CacheFileHandler(
         cache_path=spotify_cache_path()
     )
     auth_manager = spotipy.oauth2.SpotifyOAuth(
-        scope="playlist-modify-public", # We can edit the user's playlists
+        scope="playlist-modify-public",  # We can edit the user's playlists
         cache_handler=cache_handler,
         show_dialog=True,
         redirect_uri=os.getenv("SPOTIPY_REDIRECT_URI"),
@@ -109,15 +108,13 @@ def homepage():
         auth_manager.get_access_token(request.args.get("code"))
         return redirect("/")
 
-    template = {"/": "index.html", "/about": "about.html"}[request.path]
-
     if not auth_manager.validate_token(cache_handler.get_cached_token()):
         # Step 1. Not signed in, show "Sign In" button
         auth_url = auth_manager.get_authorize_url()
-        return render_template(template, logged_in=False, auth_url=auth_url)
+        return render_template("index.html", logged_in=False, auth_url=auth_url)
 
     # Step 3. Signed in, show "Sign Out" button
-    return render_template(template, logged_in=True)
+    return render_template("index.html", logged_in=True)
 
 
 # User clicked "Sign Out" button
@@ -138,10 +135,12 @@ def sign_out():
 @ensure_session
 @authenticate
 def view_squads(spotify_api):
+    query = {"leader_id": spotify_api.me()["id"]}
     return render_template(
         "squads-list.html",
         logged_in=True,
-        squads_list=db.find({"leader_id": spotify_api.me()["id"]})
+        squads_list=db.find(query),
+        squads_list_length=db.count_documents(query),
     )
 
 
@@ -151,10 +150,10 @@ def view_squads(spotify_api):
 @auth_optional
 def view_squad(squad_id, spotify_api):
     squad = db.find_one({"squad_id": str(squad_id)})
-    logged_in = (spotify_api != None)
-    is_leader = (logged_in and spotify_api.me()["id"] == squad["leader_id"])
+    logged_in = spotify_api != None
+    is_leader = logged_in and spotify_api.me()["id"] == squad["leader_id"]
     return render_template(
-        "squad.html",
+        "squad-page.html",
         squad=squad,
         logged_in=logged_in,
         is_leader=is_leader,
@@ -210,10 +209,12 @@ def add_to_squad(squad_id, spotify_api):
         playlist_link = playlist_form.playlist_link.data
 
         # Alert the user if the playlist link they submit is invalid
+        # TODO: Frontend dosen't use this anymore
         if spotify_api.playlist(playlist_link) == None:
             return redirect("/squads/<uuid:squad_id>/add", invalid_playlist=True)
 
         # Add playlist to squad
+        playlist_embed_id = urlparse(playlist_link).path.split("/")[-1]
         user_name = playlist_form.user_name.data
         db.update_one(
             {"squad_id": str(squad_id)},
@@ -221,6 +222,7 @@ def add_to_squad(squad_id, spotify_api):
                 "$push": {
                     "playlists": {
                         "playlist_link": playlist_link,
+                        "playlist_embed_id": playlist_embed_id,
                         "user_name": user_name,
                     }
                 }
@@ -241,12 +243,14 @@ def finish_squad(squad_id, spotify_api):
         (playlist["user_name"], playlist["playlist_link"])
         for playlist in squad["playlists"]
     ]
-    playlists = [Playlist(name, get_tracks(spotify_api, link)) for name, link in playlists]
+    playlists = [
+        Playlist(name, get_tracks(spotify_api, link)) for name, link in playlists
+    ]
     collab = CollabBuilder(playlists).build()
     collab_id = publish_collab(spotify_api, collab, squad["squad_name"])
     return render_template(
-        "finish.html",
+        "finish-squad.html",
         logged_in=True,
         squad=squad,
-        collab_link="https://open.spotify.com/playlist/" + collab_id,
+        collab_link=f"https://open.spotify.com/playlist/{collab_id}",
     )

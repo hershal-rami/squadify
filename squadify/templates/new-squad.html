@@ -3,19 +3,9 @@
 {% block title %}New Squad - Squadify{% endblock %}
 
 {% block content %}
-<div class="flex flex-col items-center">
-    {% if invalid_playlist %}
-    <script> window.alert("Invalid Playlist Link")</script>
-    {% endif %}
-
-    <form method="POST" action="/squads/new" class="mt-28 flex text-gray-300 text-xs md:text-xl">
-        {{ squad_form.hidden_tag() }}
-        {{ squad_form.squad_name(size=80,
-        class="w-4/6 md:w-auto px-5 md:px-10 py-3 md:py-6 rounded-l-md bg-transparent border-t-2 border-l-2 border-b-2
-        md:border-t-4 md:border-l-4 md:border-b-4 hover:border-green-400 border-green-500 font-bold",
-        placeholder="Squad Name" ) }}
-        <input type="submit" value="Form Squad"
-            class="px-5 md:px-10 py-3 md:py-6 rounded-r-md bg-transparent border-2 md:border-4 border-green-500 hover:border-green-400 transitions duration-300 ease-in-out hover:text-green-500 font-bold">
-    </form>
-</div>
+<form method="POST" action="/squads/new" class="flex flex-col md:flex-row">
+    {{ squad_form.hidden_tag() }}
+    {{ squad_form.squad_name(maxlength=40, class="button flex-grow", placeholder="Squad Name") }}
+    <input type="submit" value="Form Squad" class="button mt-8 md:mt-0 md:ml-4 self-center">
+</form>
 {% endblock %}

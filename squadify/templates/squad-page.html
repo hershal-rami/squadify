@@ -1,0 +1,41 @@
+{% extends "index.html" %}
+
+{% block title %}{{squad.squad_name}} - Squadify{% endblock %}
+
+{% block content %}
+<div class="flex flex-col items-center space-y-8 font-medium text-gray-800">
+    <div class="card flex flex-col items-center space-y-2 md:space-y-4">
+        <p class="text-xl md:text-4xl font-bold">{{squad.squad_name}}</p>
+        <p class="text-lg md:text-xl">Squad Leader: {{squad.leader_name}}</p>
+        <a class="button" href="/squads/{{squad.squad_id}}/finish">Compile Squad</a>
+    </div>
+
+    <div class="flex flex-col space-y-2">
+        {% for playlist in squad.playlists %}
+        <div class="flex flex-col md:flex-row shadow-md">
+            <div
+                class="md:flex-grow flex md:items-center justify-center md:text-xl p-1 md:px-4 md:py-0 rounded-t-lg md:rounded-t-none md:rounded-l-lg bg-gray-200 bg-opacity-90">
+                <p>{{playlist.user_name}}</p>
+            </div>
+            <div class="p-3 md:p-4 rounded-b-lg md:rounded-b-none md:rounded-r-lg bg-gray-200 bg-opacity-70">
+                <iframe src="https://open.spotify.com/embed/playlist/{{playlist.playlist_embed_id}}" width="300"
+                    height="80" frameborder="0" allowtransparency="true" allow="encrypted-media" class=></iframe>
+            </div>
+        </div>
+        {% endfor %}
+
+        {% if squad.playlists|length == 0 %}
+        <p class="card">Add playlists below!</p>
+        {% endif %}
+    </div>
+
+    <form method="POST" action="/squads/{{squad.squad_id}}/add"
+        class="flex flex-col md:flex-row items-center space-y-2 space-x-4">
+        {{ playlist_form.hidden_tag() }}
+        {{ playlist_form.user_name(maxlength=40, class="button", placeholder="Your Name") }}
+        {{ playlist_form.hidden_tag() }}
+        {{ playlist_form.playlist_link(maxlength=200, class="button", placeholder="Playlist Link") }}
+        <input class="button max-w-max" type="submit" value="Add Your Playlist">
+    </form>
+</div>
+{% endblock %}

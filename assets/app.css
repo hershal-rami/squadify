@@ -1,3 +1,15 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.nav-button {
+    @apply px-3 md:px-6 py-2 md:py-3 rounded-md text-sm md:text-lg font-medium text-gray-200 bg-gray-800 hover:bg-gray-900;
+}
+
+.button {
+    @apply px-3 md:px-6 py-3 rounded-md text-sm md:text-lg font-medium text-gray-200 bg-gray-800 hover:bg-gray-900 bg-opacity-80;
+}
+
+.card {
+    @apply bg-gray-200 bg-opacity-90 px-12 md:px-48 py-2 md:py-5 rounded-lg shadow-md;
+}

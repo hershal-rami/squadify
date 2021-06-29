@@ -4,17 +4,16 @@
 
 {% block content %}
 <div class="flex flex-col items-center">
-    <p
-        class="mt-8 md:mt-0 mb-6 md:mb-12 text-4xl md:text-8xl font-bold bg-gradient-to-tr from-green-600 to-yellow-400 bg-clip-text text-transparent">
-        Squads</p>
-    <div class="flex flex-col space-y-6">
+    <a class="button mb-4 md:mb-8" href="/squads/new">New Squad</a>
+    <div class="flex flex-col space-y-2 md:space-y-4">
         {% for squad in squads_list %}
-        <li class="text-xl md:text-5xl font-medium text-green-500">
-            <a href="/squads/{{squad.squad_id}}">{{squad.squad_name}}</a>
-        </li>
+        <a class="card text-center text-lg md:text-2xl font-medium text-gray-800"
+            href="/squads/{{squad.squad_id}}">{{squad.squad_name}}</a>
         {% endfor %}
+
+        {% if squads_list_length == 0 %}
+        <p class="card">Add a squad above!</p>
+        {% endif %}
     </div>
-    <a class="my-6 md:mt-16 px-5 md:px-10 py-3 md:py-6 transform transition-transform hover:scale-110 rounded-md border-2 md:border-4 hover:border-green-400 border-green-500 text-center md:text-4xl transitions duration-300 ease-in-out text-gray-200 hover:text-green-500"
-        href="/squads/new">New Squad</a>
 </div>
 {% endblock %}
