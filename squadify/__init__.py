@@ -215,7 +215,6 @@ def add_to_squad(squad_id, spotify_api):
             {
                 "$push": {
                     "playlists": {
-                        "playlist_link": playlist_link,
                         "playlist_id": playlist_id,
                         "user_name": user_name,
                     }
