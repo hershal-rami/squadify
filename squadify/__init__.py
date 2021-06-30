@@ -39,9 +39,7 @@ db = client["squads"]["squads"]
 def authenticate(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
-        cache_handler = spotipy.cache_handler.CacheFileHandler(
-            cache_path=spotify_cache_path()
-        )
+        cache_handler = spotipy.cache_handler.CacheFileHandler(cache_path=spotify_cache_path())
         auth_manager = spotipy.oauth2.SpotifyOAuth(cache_handler=cache_handler)
 
         if not auth_manager.validate_token(cache_handler.get_cached_token()):
@@ -62,9 +60,7 @@ def authenticate(f):
 def auth_optional(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
-        cache_handler = spotipy.cache_handler.CacheFileHandler(
-            cache_path=spotify_cache_path()
-        )
+        cache_handler = spotipy.cache_handler.CacheFileHandler(cache_path=spotify_cache_path())
         auth_manager = spotipy.oauth2.SpotifyOAuth(cache_handler=cache_handler)
 
         # "Return" spotipy object if logged into Spotify, None otherwise
@@ -93,9 +89,7 @@ def ensure_session(f):
 @app.route("/", methods=["GET"])
 @ensure_session
 def homepage():
-    cache_handler = spotipy.cache_handler.CacheFileHandler(
-        cache_path=spotify_cache_path()
-    )
+    cache_handler = spotipy.cache_handler.CacheFileHandler(cache_path=spotify_cache_path())
     auth_manager = spotipy.oauth2.SpotifyOAuth(
         scope="playlist-modify-public",  # We can edit the user's playlists
         cache_handler=cache_handler,
