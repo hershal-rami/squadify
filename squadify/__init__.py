@@ -208,7 +208,7 @@ def add_to_squad(squad_id, spotify_api):
             return redirect("/squads/<uuid:squad_id>/add", invalid_playlist=True)
 
         # Add playlist to squad
-        playlist_embed_id = urlparse(playlist_link).path.split("/")[-1]
+        playlist_id = urlparse(playlist_link).path.split("/")[-1]
         user_name = playlist_form.user_name.data
         db.update_one(
             {"squad_id": str(squad_id)},
@@ -216,7 +216,7 @@ def add_to_squad(squad_id, spotify_api):
                 "$push": {
                     "playlists": {
                         "playlist_link": playlist_link,
-                        "playlist_embed_id": playlist_embed_id,
+                        "playlist_id": playlist_id,
                         "user_name": user_name,
                     }
                 }
@@ -233,8 +233,8 @@ def add_to_squad(squad_id, spotify_api):
 @authenticate
 def finish_squad(squad_id, spotify_api):
     squad = db.find_one({"squad_id": str(squad_id)})
-    playlists = [(playlist["user_name"], playlist["playlist_link"]) for playlist in squad["playlists"]]
-    playlists = [Playlist(name, get_tracks(spotify_api, link)) for name, link in playlists]
+    playlists = [(playlist["user_name"], playlist["playlist_id"]) for playlist in squad["playlists"]]
+    playlists = [Playlist(name, get_tracks(spotify_api, id)) for name, id in playlists]
     collab = CollabBuilder(playlists).build()
     collab_id = publish_collab(spotify_api, collab, squad["squad_name"])
     return render_template(
