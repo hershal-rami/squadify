@@ -7,7 +7,7 @@
     <meta name="description" content="Merge your squad's music tastes into a single playlist!">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='app.css')}}">
-    <link rel="icon" type="image/png" href="{{url_for('static', filename='favicon.png')}}" />
+    <link rel="icon" type="image/svg+xml" href="{{url_for('static', filename='favicon.svg')}}" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
@@ -18,7 +18,7 @@
     <div class="p-4 bg-gray-800 bg-opacity-80 shadow-md md:shadow-lg">
         <div class="container mx-auto flex items-center justify-between">
             <a href="/">
-                <img class="h-8 md:h-12" src="{{url_for('static', filename='logo.png')}}">
+                <img class="h-8 md:h-12" src="{{url_for('static', filename='logo.svg')}}">
             </a>
             <div class="flex items-center space-x-2 md:space-x-6">
                 {% if logged_in %}
