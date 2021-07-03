@@ -17,9 +17,15 @@
                 class="md:flex-grow flex md:items-center justify-center md:text-xl p-1 md:px-4 md:py-0 rounded-t-lg md:rounded-t-none md:rounded-l-lg bg-gray-200 bg-opacity-90">
                 <p>{{playlist.user_name}}</p>
             </div>
-            <div class="p-3 md:p-4 rounded-b-lg md:rounded-b-none md:rounded-r-lg bg-gray-200 bg-opacity-70">
+            <div class="p-3 md:p-4 bg-gray-200 bg-opacity-70">
                 <iframe src="https://open.spotify.com/embed/playlist/{{playlist.playlist_id}}" width="300"
                     height="80" frameborder="0" allowtransparency="true" allow="encrypted-media" class=></iframe>
+            </div>
+            <div
+                class="md:flex-grow flex md:items-center justify-center p-1 md:px-4 md:py-0 rounded-b-lg md:rounded-b-none md:rounded-r-lg bg-gray-200 bg-opacity-90">
+                <a href="/squads/{{squad.squad_id}}/delete?playlist_id={{playlist.playlist_id}}&user_name={{playlist.user_name}}">
+                    <img class="h-8 md:h-12" src="{{url_for('static', filename='delete.svg')}}">
+                </a>
             </div>
         </div>
         {% endfor %}

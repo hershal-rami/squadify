@@ -3,7 +3,7 @@ from flask_session import Session
 from flask_wtf import FlaskForm
 from functools import wraps
 from pymongo import MongoClient
-from squadify.make_playlist import Playlist, CollabBuilder
+from squadify.make_collab import Playlist, CollabBuilder
 from squadify.spotify_api_util import get_tracks, publish_collab
 from urllib.parse import urlparse
 from wtforms import StringField
@@ -194,8 +194,8 @@ def new_squad(spotify_api):
 # Add playlist to existing squad
 @app.route("/squads/<uuid:squad_id>/add", methods=["POST"])
 @ensure_session
-@authenticate
-def add_to_squad(squad_id, spotify_api):
+@authenticate  # TODO: User shouldn't need to log in to add a playlist
+def add_playlist(squad_id, spotify_api):
     playlist_form = PlaylistForm()
 
     # Only try adding a playlist if the user submitted the playlist info
@@ -222,7 +222,27 @@ def add_to_squad(squad_id, spotify_api):
             },
         )
 
-    # User got here illegitimately, redirect to squad page
+    # Redirect to squad page
+    return redirect(f"/squads/{squad_id}")
+
+
+# Delete playlist from existing squad
+@app.route("/squads/<uuid:squad_id>/delete", methods=["GET"])
+@ensure_session
+def delete_playlist(squad_id):
+    db.update_one(
+        {"squad_id": str(squad_id)},
+        {
+            "$pull": {
+                "playlists": {
+                    "playlist_id": request.args.get("playlist_id"),
+                    "user_name": request.args.get("user_name"),
+                }
+            }
+        },
+    )
+
+    # Redirect to squad page
     return redirect(f"/squads/{squad_id}")
 
 

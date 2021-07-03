@@ -1,5 +1,5 @@
 import math
-from squadify.make_playlist import Track
+from squadify.make_collab import Track
 
 TRACK_PULL_LIMIT = 100  # Number of tracks the Spotify API lets you query at once
 TRACK_PUSH_LIMIT = 20  # Number of tracks the Spotify API lets you add at once

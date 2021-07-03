@@ -279,7 +279,7 @@ class CollabBuilder:
             # Otherwise, consume the track
             self.__consume_track(track)
 
-    # Make a collaborative playlist out of the playlists of each squad member
+    # Make a collaborative playlist (collab) out of the playlists of each squad member
     def build(self):
         self.__create_track_list()
         self.__populate_linkedness()
