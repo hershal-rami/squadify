@@ -46,7 +46,7 @@ def authenticate(f):
             # Redirect to home if not logged into Spotify
             return redirect("/")
         else:
-            # "Return" spotipy object if logged into Spotify
+            # "Return" SpotifyAPI object if logged into Spotify
             spotify_api = SpotifyAPI(auth_manager=auth_manager)
             kwargs["spotify_api"] = spotify_api
             return f(*args, **kwargs)
@@ -56,18 +56,21 @@ def authenticate(f):
 
 # Apply to pages where Spotify login is optional, but we want to know if they
 # are logged in or not
-# Methods with this wrapper must take the parameter "spotify_api"
+# Methods with this wrapper must take the parameters "spotify_api" and "logged_in"
 def auth_optional(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
         cache_handler = spotipy.cache_handler.CacheFileHandler(cache_path=spotify_cache_path())
         auth_manager = spotipy.oauth2.SpotifyOAuth(cache_handler=cache_handler)
 
-        # "Return" spotipy object if logged into Spotify, None otherwise
-        kwargs["spotify_api"] = None
+        # "Return" SpotifyAPI object if logged into Spotify, None otherwise
         if auth_manager.validate_token(cache_handler.get_cached_token()):
             spotify_api = SpotifyAPI(auth_manager=auth_manager)
             kwargs["spotify_api"] = spotify_api
+            kwargs["logged_in"] = True
+        else:
+            kwargs["spotify_api"] = None
+            kwargs["logged_in"] = False
         return f(*args, **kwargs)
 
     return wrapper
@@ -85,30 +88,26 @@ def ensure_session(f):
     return wrapper
 
 
-# Homepage
-@app.route("/", methods=["GET"])
+# User clicked "Sign In" button
+@app.route("/sign_in", methods=["GET"])
 @ensure_session
-def homepage():
+def sign_in():
     cache_handler = spotipy.cache_handler.CacheFileHandler(cache_path=spotify_cache_path())
     auth_manager = spotipy.oauth2.SpotifyOAuth(
         scope="playlist-modify-public",  # We can edit the user's playlists
         cache_handler=cache_handler,
         show_dialog=True,
-        redirect_uri=os.getenv("SPOTIPY_REDIRECT_URI"),
+        redirect_uri=os.getenv("SPOTIPY_REDIRECT_URI") + "/sign_in",  # Have Spotify send us back here
+        state=request.environ.get('HTTP_REFERER')  # Send along the final destination after sign-in
     )
 
-    if request.args.get("code"):
-        # Step 2. Redirected after successful sign in
+    if len(request.args) == 0:
+        # Step 1. Go to Spotify to get authorized
+        return redirect(auth_manager.get_authorize_url())
+    else:
+        # Step 2. Got sent back here, redirect back to wherever the user hit "Sign In" from
         auth_manager.get_access_token(request.args.get("code"))
-        return redirect("/")
-
-    if not auth_manager.validate_token(cache_handler.get_cached_token()):
-        # Step 1. Not signed in, show "Sign In" button
-        auth_url = auth_manager.get_authorize_url()
-        return render_template("index.html", logged_in=False, auth_url=auth_url)
-
-    # Step 3. Signed in, show "Sign Out" button
-    return render_template("index.html", logged_in=True)
+        return redirect(request.args.get("state"))
 
 
 # User clicked "Sign Out" button
@@ -122,6 +121,14 @@ def sign_out():
     except OSError as e:
         print("Error: %s - %s." % (e.filename, e.strerror))
     return redirect("/")
+
+
+# Homepage
+@app.route("/", methods=["GET"])
+@ensure_session
+@auth_optional
+def homepage(spotify_api, logged_in):
+    return render_template("index.html", logged_in=logged_in)
 
 
 # View list of user's squads
@@ -142,9 +149,8 @@ def view_squads(spotify_api):
 @app.route("/squads/<uuid:squad_id>", methods=["GET"])
 @ensure_session
 @auth_optional
-def view_squad(squad_id, spotify_api):
+def view_squad(squad_id, spotify_api, logged_in):
     squad = db.find_one({"squad_id": str(squad_id)})
-    logged_in = spotify_api != None
     is_leader = logged_in and spotify_api.me()["id"] == squad["leader_id"]
     return render_template(
         "squad-page.html",
