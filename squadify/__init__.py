@@ -4,7 +4,7 @@ from flask_wtf import FlaskForm
 from functools import wraps
 from pymongo import MongoClient
 from squadify.make_collab import Playlist, CollabBuilder
-from squadify.spotify_api_util import get_tracks, publish_collab
+from squadify.spotify_api import SpotifyAPI
 from urllib.parse import urlparse
 from wtforms import StringField
 import os
@@ -47,7 +47,7 @@ def authenticate(f):
             return redirect("/")
         else:
             # "Return" spotipy object if logged into Spotify
-            spotify_api = spotipy.Spotify(auth_manager=auth_manager)
+            spotify_api = SpotifyAPI(auth_manager=auth_manager)
             kwargs["spotify_api"] = spotify_api
             return f(*args, **kwargs)
 
@@ -66,7 +66,7 @@ def auth_optional(f):
         # "Return" spotipy object if logged into Spotify, None otherwise
         kwargs["spotify_api"] = None
         if auth_manager.validate_token(cache_handler.get_cached_token()):
-            spotify_api = spotipy.Spotify(auth_manager=auth_manager)
+            spotify_api = SpotifyAPI(auth_manager=auth_manager)
             kwargs["spotify_api"] = spotify_api
         return f(*args, **kwargs)
 
@@ -253,9 +253,9 @@ def delete_playlist(squad_id):
 def finish_squad(squad_id, spotify_api):
     squad = db.find_one({"squad_id": str(squad_id)})
     playlists = [(playlist["user_name"], playlist["playlist_id"]) for playlist in squad["playlists"]]
-    playlists = [Playlist(name, get_tracks(spotify_api, id)) for name, id in playlists]
+    playlists = [Playlist(name, spotify_api.get_tracks(id)) for name, id in playlists]
     collab = CollabBuilder(playlists).build()
-    collab_id = publish_collab(spotify_api, collab, squad["squad_name"])
+    collab_id = spotify_api.publish_collab(collab, squad["squad_name"])
     return render_template(
         "finish-squad.html",
         logged_in=True,
