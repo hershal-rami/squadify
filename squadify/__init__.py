@@ -200,18 +200,12 @@ def new_squad(spotify_api):
 # Add playlist to existing squad
 @app.route("/squads/<uuid:squad_id>/add", methods=["POST"])
 @ensure_session
-@authenticate  # TODO: User shouldn't need to log in to add a playlist
-def add_playlist(squad_id, spotify_api):
+def add_playlist(squad_id):
     playlist_form = PlaylistForm()
 
     # Only try adding a playlist if the user submitted the playlist info
     if playlist_form.validate_on_submit():
         playlist_link = playlist_form.playlist_link.data
-
-        # Alert the user if the playlist link they submit is invalid
-        # TODO: Frontend dosen't use this anymore
-        if spotify_api.playlist(playlist_link) == None:
-            return redirect("/squads/<uuid:squad_id>/add", invalid_playlist=True)
 
         # Add playlist to squad
         playlist_id = urlparse(playlist_link).path.split("/")[-1]
