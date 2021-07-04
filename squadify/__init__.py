@@ -98,7 +98,7 @@ def ensure_session(f):
 
 
 # User clicked "Sign In" button
-@app.route("/sign_in", methods=["GET"])
+@app.get("/sign_in")
 @ensure_session
 def sign_in():
     cache_handler = spotipy.cache_handler.CacheFileHandler(cache_path=spotify_cache_path())
@@ -120,7 +120,7 @@ def sign_in():
 
 
 # User clicked "Sign Out" button
-@app.route("/sign_out", methods=["GET"])
+@app.get("/sign_out")
 @ensure_session
 def sign_out():
     try:
@@ -133,7 +133,7 @@ def sign_out():
 
 
 # Homepage
-@app.route("/", methods=["GET"])
+@app.get("/")
 @ensure_session
 @auth_optional
 def homepage(spotify_api, logged_in):
@@ -141,7 +141,7 @@ def homepage(spotify_api, logged_in):
 
 
 # View list of user's squads
-@app.route("/squads", methods=["GET"])
+@app.get("/squads")
 @ensure_session
 @authenticate
 def view_squads(spotify_api):
@@ -155,7 +155,7 @@ def view_squads(spotify_api):
 
 
 # View a specific squad
-@app.route("/squads/<uuid:squad_id>", methods=["GET"])
+@app.get("/squads/<uuid:squad_id>")
 @ensure_session
 @auth_optional
 def view_squad(squad_id, spotify_api, logged_in):
@@ -198,7 +198,7 @@ def new_squad(spotify_api):
 
 
 # Add playlist to existing squad
-@app.route("/squads/<uuid:squad_id>/add", methods=["POST"])
+@app.post("/squads/<uuid:squad_id>/add")
 @ensure_session
 def add_playlist(squad_id):
     playlist_form = PlaylistForm()
@@ -227,7 +227,7 @@ def add_playlist(squad_id):
 
 
 # Delete playlist from existing squad
-@app.route("/squads/<uuid:squad_id>/delete", methods=["GET"])
+@app.get("/squads/<uuid:squad_id>/delete")
 @ensure_session
 def delete_playlist(squad_id):
     db.update_one(
@@ -247,7 +247,7 @@ def delete_playlist(squad_id):
 
 
 # Create the collab and display a link to it
-@app.route("/squads/<uuid:squad_id>/finish", methods=["GET"])
+@app.get("/squads/<uuid:squad_id>/finish")
 @ensure_session
 @authenticate
 def finish_squad(squad_id, spotify_api):
