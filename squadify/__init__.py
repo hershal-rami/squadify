@@ -34,6 +34,15 @@ client = MongoClient("localhost", 27017)
 db = client["squads"]["squads"]
 
 
+class SquadForm(FlaskForm):
+    squad_name = StringField()
+
+
+class PlaylistForm(FlaskForm):
+    user_name = StringField()
+    playlist_link = StringField()
+
+
 # Apply to pages that require the user to be logged into Spotify
 # Methods with this wrapper must take the parameter "spotify_api"
 def authenticate(f):
@@ -159,15 +168,6 @@ def view_squad(squad_id, spotify_api, logged_in):
         is_leader=is_leader,
         playlist_form=PlaylistForm(),
     )
-
-
-class SquadForm(FlaskForm):
-    squad_name = StringField()
-
-
-class PlaylistForm(FlaskForm):
-    user_name = StringField()
-    playlist_link = StringField()
 
 
 # Create new squad
