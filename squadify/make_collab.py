@@ -127,7 +127,7 @@ class CollabBuilder:
     # Have each track point to the previous and next one in the list of all tracks.
     # Also, for each track, for each member, point to the previous/next track in the
     # list that this member owns.
-    def __populate_linkedness(self):
+    def __link_tracks(self):
         # Stores the previous track owned by each member
         prev_track_of_member = {member: None for member in self.members}
 
@@ -282,9 +282,11 @@ class CollabBuilder:
     # Make a collaborative playlist (collab) out of the playlists of each squad member
     def build(self):
         self.__create_track_list()
-        self.__populate_linkedness()
+        self.__link_tracks()
         self.__give_members_minimum_share()
         self.__add_all_of_highest_frequencies()
         self.__add_some_of_last_frequency()
+
+        self.collab.sort(key=Track.frequency, reverse=True)
 
         return self.collab
