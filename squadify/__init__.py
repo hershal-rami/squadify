@@ -85,7 +85,7 @@ def sign_in():
         cache_handler=cache_handler,
         show_dialog=True,
         redirect_uri=os.getenv("SPOTIPY_REDIRECT_URI") + "/sign_in",  # Have Spotify send us back here
-        state=request.args.get("dest", request.environ.get('HTTP_REFERER'))  # Final destination after sign-in
+        state=request.args.get("dest", request.environ.get('HTTP_REFERER', "/"))  # Final destination after sign-in
     )
 
     if not request.args.get("code"):
