@@ -1,4 +1,4 @@
-from flask import Flask, render_template, session, request, redirect
+from flask import Flask, render_template, session, request, redirect, abort
 from flask_session import Session
 from flask_wtf import FlaskForm
 from functools import wraps
@@ -134,6 +134,8 @@ def view_squads(spotify_api):
 @authenticate(required=False)
 def view_squad(squad_id, spotify_api, signed_in):
     squad = db.find_one({"squad_id": str(squad_id)})
+    if squad == None:
+        abort(404)
     is_leader = signed_in and spotify_api.me()["id"] == squad["leader_id"]
     return render_template(
         "squad-page.html",
