@@ -43,63 +43,41 @@ class PlaylistForm(FlaskForm):
     playlist_link = StringField()
 
 
-# Apply to pages that require the user to be logged into Spotify
-# Methods with this wrapper must take the parameter "spotify_api"
-def authenticate(f):
-    @wraps(f)
-    def wrapper(*args, **kwargs):
-        cache_handler = spotipy.cache_handler.CacheFileHandler(cache_path=spotify_cache_path())
-        auth_manager = spotipy.oauth2.SpotifyOAuth(cache_handler=cache_handler)
+# Apply to pages where Spotify login is either required or optional
+# Methods with this wrapper must take the parameters "spotify_api" and, if
+# required=False, "logged_in"
+def authenticate(required):
+    def decorator(f):
+        @wraps(f)
+        def wrapper(*args, **kwargs):
+            # Ensure the user has a Flask session ID
+            if not session.get("uuid"):
+                session["uuid"] = str(uuid.uuid4())
 
-        if not auth_manager.validate_token(cache_handler.get_cached_token()):
-            # Redirect to home if not logged into Spotify
-            return redirect("/")
-        else:
-            # "Return" SpotifyAPI object if logged into Spotify
-            spotify_api = SpotifyAPI(auth_manager=auth_manager)
-            kwargs["spotify_api"] = spotify_api
+            cache_handler = spotipy.cache_handler.CacheFileHandler(cache_path=spotify_cache_path())
+            auth_manager = spotipy.oauth2.SpotifyOAuth(cache_handler=cache_handler)
+
+            if auth_manager.validate_token(cache_handler.get_cached_token()):
+                # User is logged into Spotify
+                spotify_api = SpotifyAPI(auth_manager=auth_manager)
+                kwargs["spotify_api"] = spotify_api
+                if not required:
+                    kwargs["logged_in"] = True
+            else:
+                # User is not logged into Spotify
+                if required:
+                    # Must be logged in to be here, send user back to home
+                    return redirect("/")
+                kwargs["spotify_api"] = None
+                kwargs["logged_in"] = False
+
             return f(*args, **kwargs)
-
-    return wrapper
-
-
-# Apply to pages where Spotify login is optional, but we want to know if they
-# are logged in or not
-# Methods with this wrapper must take the parameters "spotify_api" and "logged_in"
-def auth_optional(f):
-    @wraps(f)
-    def wrapper(*args, **kwargs):
-        cache_handler = spotipy.cache_handler.CacheFileHandler(cache_path=spotify_cache_path())
-        auth_manager = spotipy.oauth2.SpotifyOAuth(cache_handler=cache_handler)
-
-        # "Return" SpotifyAPI object if logged into Spotify, None otherwise
-        if auth_manager.validate_token(cache_handler.get_cached_token()):
-            spotify_api = SpotifyAPI(auth_manager=auth_manager)
-            kwargs["spotify_api"] = spotify_api
-            kwargs["logged_in"] = True
-        else:
-            kwargs["spotify_api"] = None
-            kwargs["logged_in"] = False
-        return f(*args, **kwargs)
-
-    return wrapper
-
-
-# Ensure the user has a Flask session ID
-# Apply to all pages
-def ensure_session(f):
-    @wraps(f)
-    def wrapper(*args, **kwargs):
-        if not session.get("uuid"):
-            session["uuid"] = str(uuid.uuid4())
-        return f(*args, **kwargs)
-
-    return wrapper
+        return wrapper
+    return decorator
 
 
 # User clicked "Sign In" button
 @app.get("/sign_in")
-@ensure_session
 def sign_in():
     cache_handler = spotipy.cache_handler.CacheFileHandler(cache_path=spotify_cache_path())
     auth_manager = spotipy.oauth2.SpotifyOAuth(
@@ -121,7 +99,6 @@ def sign_in():
 
 # User clicked "Sign Out" button
 @app.get("/sign_out")
-@ensure_session
 def sign_out():
     try:
         # Remove the CACHE file (.cache-test) so that a new user can authorize.
@@ -134,16 +111,14 @@ def sign_out():
 
 # Homepage
 @app.get("/")
-@ensure_session
-@auth_optional
+@authenticate(required=False)
 def homepage(spotify_api, logged_in):
     return render_template("index.html", logged_in=logged_in)
 
 
 # View list of user's squads
 @app.get("/squads")
-@ensure_session
-@authenticate
+@authenticate(required=True)
 def view_squads(spotify_api):
     query = {"leader_id": spotify_api.me()["id"]}
     return render_template(
@@ -156,8 +131,7 @@ def view_squads(spotify_api):
 
 # View a specific squad
 @app.get("/squads/<uuid:squad_id>")
-@ensure_session
-@auth_optional
+@authenticate(required=False)
 def view_squad(squad_id, spotify_api, logged_in):
     squad = db.find_one({"squad_id": str(squad_id)})
     is_leader = logged_in and spotify_api.me()["id"] == squad["leader_id"]
@@ -172,8 +146,7 @@ def view_squad(squad_id, spotify_api, logged_in):
 
 # Create new squad
 @app.route("/squads/new", methods=["GET", "POST"])
-@ensure_session
-@authenticate
+@authenticate(required=True)
 def new_squad(spotify_api):
     squad_form = SquadForm()
 
@@ -199,7 +172,6 @@ def new_squad(spotify_api):
 
 # Add playlist to existing squad
 @app.post("/squads/<uuid:squad_id>/add")
-@ensure_session
 def add_playlist(squad_id):
     playlist_form = PlaylistForm()
 
@@ -228,7 +200,6 @@ def add_playlist(squad_id):
 
 # Delete playlist from existing squad
 @app.get("/squads/<uuid:squad_id>/delete")
-@ensure_session
 def delete_playlist(squad_id):
     db.update_one(
         {"squad_id": str(squad_id)},
@@ -248,8 +219,7 @@ def delete_playlist(squad_id):
 
 # Create the collab and display a link to it
 @app.get("/squads/<uuid:squad_id>/finish")
-@ensure_session
-@authenticate
+@authenticate(required=True)
 def finish_squad(squad_id, spotify_api):
     squad = db.find_one({"squad_id": str(squad_id)})
     playlists = [(playlist["user_name"], playlist["playlist_id"]) for playlist in squad["playlists"]]
