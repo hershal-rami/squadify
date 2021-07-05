@@ -45,7 +45,7 @@ class PlaylistForm(FlaskForm):
 
 # Apply to pages where Spotify login is either required or optional
 # Methods with this wrapper must take the parameters "spotify_api" and, if
-# required=False, "logged_in"
+# required=False, "signed_in"
 def authenticate(required):
     def decorator(f):
         @wraps(f)
@@ -62,14 +62,14 @@ def authenticate(required):
                 spotify_api = SpotifyAPI(auth_manager=auth_manager)
                 kwargs["spotify_api"] = spotify_api
                 if not required:
-                    kwargs["logged_in"] = True
+                    kwargs["signed_in"] = True
             else:
                 # User is not logged into Spotify
                 if required:
                     # Must be logged in to be here, send user back to home
                     return redirect("/")
                 kwargs["spotify_api"] = None
-                kwargs["logged_in"] = False
+                kwargs["signed_in"] = False
 
             return f(*args, **kwargs)
         return wrapper
@@ -85,14 +85,14 @@ def sign_in():
         cache_handler=cache_handler,
         show_dialog=True,
         redirect_uri=os.getenv("SPOTIPY_REDIRECT_URI") + "/sign_in",  # Have Spotify send us back here
-        state=request.environ.get('HTTP_REFERER')  # Send along the final destination after sign-in
+        state=request.args.get("dest", request.environ.get('HTTP_REFERER'))  # Final destination after sign-in
     )
 
-    if len(request.args) == 0:
+    if not request.args.get("code"):
         # Step 1. Go to Spotify to get authorized
         return redirect(auth_manager.get_authorize_url())
     else:
-        # Step 2. Got sent back here, redirect back to wherever the user hit "Sign In" from
+        # Step 2. Got sent back here, redirect to final destination
         auth_manager.get_access_token(request.args.get("code"))
         return redirect(request.args.get("state"))
 
@@ -112,8 +112,8 @@ def sign_out():
 # Homepage
 @app.get("/")
 @authenticate(required=False)
-def homepage(spotify_api, logged_in):
-    return render_template("index.html", logged_in=logged_in)
+def homepage(spotify_api, signed_in):
+    return render_template("index.html", signed_in=signed_in)
 
 
 # View list of user's squads
@@ -123,7 +123,7 @@ def view_squads(spotify_api):
     query = {"leader_id": spotify_api.me()["id"]}
     return render_template(
         "squads-list.html",
-        logged_in=True,
+        signed_in=True,
         squads_list=db.find(query),
         squads_list_length=db.count_documents(query),
     )
@@ -132,13 +132,13 @@ def view_squads(spotify_api):
 # View a specific squad
 @app.get("/squads/<uuid:squad_id>")
 @authenticate(required=False)
-def view_squad(squad_id, spotify_api, logged_in):
+def view_squad(squad_id, spotify_api, signed_in):
     squad = db.find_one({"squad_id": str(squad_id)})
-    is_leader = logged_in and spotify_api.me()["id"] == squad["leader_id"]
+    is_leader = signed_in and spotify_api.me()["id"] == squad["leader_id"]
     return render_template(
         "squad-page.html",
         squad=squad,
-        logged_in=logged_in,
+        signed_in=signed_in,
         is_leader=is_leader,
         playlist_form=PlaylistForm(),
     )
@@ -167,7 +167,7 @@ def new_squad(spotify_api):
 
     # Step 1: User pressed "Squad Up!" on the homepage, so we let the them
     # submit a squad name
-    return render_template("new-squad.html", logged_in=True, squad_form=squad_form)
+    return render_template("new-squad.html", signed_in=True, squad_form=squad_form)
 
 
 # Add playlist to existing squad
@@ -228,7 +228,7 @@ def finish_squad(squad_id, spotify_api):
     collab_id = spotify_api.publish_collab(collab, squad["squad_name"])
     return render_template(
         "finish-squad.html",
-        logged_in=True,
+        signed_in=True,
         squad=squad,
         playlist_embed_id=collab_id,
     )

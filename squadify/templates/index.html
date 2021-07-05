@@ -21,7 +21,7 @@
                 <img class="h-8 md:h-12" src="{{url_for('static', filename='logo.svg')}}">
             </a>
             <div class="flex items-center space-x-2 md:space-x-6">
-                {% if logged_in %}
+                {% if signed_in %}
                 <a class="nav-button" href="/squads">Squads</a>
                 <a class="nav-button" href="/sign_out">Sign Out</a>
                 {% else %}
@@ -50,10 +50,10 @@
             <p>Our algorithm will merge your playlists to maximize diversity, and
                 automatically add it to your Spotify account.</p>
             <p>Sign in now to get started and Squad Up!</p>
-            {% if logged_in %}
+            {% if signed_in %}
             <a class="button max-w-max" href="/squads/new">Squad Up!</a>
             {% else %}
-            <a class="button max-w-max" href="/sign_in">Squad Up!</a>
+            <a class="button max-w-max" href="/sign_in?dest=%2Fsquads%2Fnew">Squad Up!</a>
             {% endif %}
         </div>
         {% endblock %}
