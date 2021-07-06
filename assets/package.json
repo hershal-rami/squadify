@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "TAILWIND_MODE=watch postcss app.css -o ../squadify/static/app.css --watch",
-    "release": "postcss app.css -o ../squadify/static/app.css"
+    "prod": "postcss app.css -o ../squadify/static/app.css"
   },
   "dependencies": {
     "@tailwindcss/forms": "0.3.x",
