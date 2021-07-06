@@ -1,6 +1,7 @@
-**/__pycache__
 .cache
+.vscode
+**/__pycache__
 **/.flask_session
 **/.spotify_caches
 assets/node_modules
-.vscode
+squadify/static/app.css

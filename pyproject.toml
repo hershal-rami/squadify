@@ -13,6 +13,9 @@ Flask-Session = "^0.4.0"
 flask_wtf = "^0.15.1"
 wtforms = "^2.3.3"
 
+[tool.poetry.dev-dependencies]
+gunicorn = "^20.1.0"
+
 [build-system]
 requires = ["poetry>=0.12"]
 build-backend = "poetry.masonry.api"

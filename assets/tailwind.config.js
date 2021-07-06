@@ -1,12 +1,10 @@
 const colors = require("tailwindcss/colors");
 
 module.exports = {
-    purge: {
-        enabled: true,
-        content: [
-            "../squadify/templates/*.html"
-        ],
-    },
+    mode: "jit",
+    purge: [
+        "../squadify/templates/*.html"
+    ],
     darkMode: false,
     theme: {
         extend: {
