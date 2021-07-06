@@ -14,6 +14,6 @@ PARTY TIME!!!
 1. Run MongoDB with a database and collection named `squads`
 2. `poetry install`
 3. In `assets`, run `npm install && npm run prod`
-4. In the Spotify dashboard, get the client ID and secret, and set the redirect URI to `http://127.0.0.1:5000`
-5. Set the environment variables `SPOTIPY_CLIENT_ID`, `SPOTIPY_CLIENT_SECRET`, and `SPOTIPY_REDIRECT_URI="http://127.0.0.1:5000"`
+4. In the Spotify dashboard, get the client ID and secret, and set the redirect URI
+5. Set the environment variables `SPOTIPY_CLIENT_ID`, `SPOTIPY_CLIENT_SECRET`, and `SPOTIPY_REDIRECT_URI`
 6. `poetry run gunicorn squadify:app`
