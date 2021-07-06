@@ -8,12 +8,33 @@ from spotipy.oauth2 import SpotifyOAuth
 from squadify.make_collab import Playlist, CollabBuilder
 from squadify.spotify_api import SpotifyAPI
 from urllib.parse import urlparse
+from werkzeug.routing import BaseConverter
 from wtforms import StringField
 import os
 import spotipy
 import uuid
 
+
+# Connect to running MongoDB
+client = MongoClient("localhost", 27017)
+db = client["squads"]["squads"]
+
+
+# Fetches a squad from a squad_id, or returns a 404 if it doesn't exist
+class SquadConverter(BaseConverter):
+    def to_python(self, squad_id):
+        squad = db.find_one({"squad_id": squad_id})
+        if squad == None:
+            abort(404)
+        return squad
+
+    def to_url(self, squad):
+        return squad["squad_id"]
+
+
 app = Flask(__name__)
+
+app.url_map.converters["squad"] = SquadConverter
 
 app.config["SECRET_KEY"] = os.urandom(64)
 app.config["SESSION_TYPE"] = "filesystem"
@@ -31,11 +52,6 @@ def spotify_cache_path():
     return caches_folder + session.get("uuid")
 
 
-# Connect to running MongoDB
-client = MongoClient("localhost", 27017)
-db = client["squads"]["squads"]
-
-
 class NewSquadForm(FlaskForm):
     squad_name = StringField()
 
@@ -46,8 +62,7 @@ class AddPlaylistForm(FlaskForm):
 
 
 # Apply to pages where Spotify login is either required or optional
-# Methods with this wrapper must take the parameters "spotify_api",
-# and if required=False, "signed_in"
+# Routes with this wrapper must take the parameters "spotify_api", and if required=False, "signed_in"
 def authenticate(required):
     def decorator(f):
         @wraps(f)
@@ -133,13 +148,9 @@ def view_squads(spotify_api):
 
 
 # View a specific squad
-@app.get("/squads/<uuid:squad_id>")
+@app.get("/squads/<squad:squad>")
 @authenticate(required=False)
-def view_squad(squad_id, spotify_api, signed_in):
-    squad = db.find_one({"squad_id": str(squad_id)})
-    if squad == None:
-        abort(404)
-
+def view_squad(spotify_api, signed_in, squad):
     is_leader = signed_in and spotify_api.me()["id"] == squad["leader_id"]
     return render_template(
         "squad-page.html",
@@ -174,14 +185,16 @@ def new_squad(spotify_api):
 
 
 # Add a playlist to an existing squad
-@app.post("/squads/<uuid:squad_id>/add")
-def add_playlist(squad_id):
+@app.post("/squads/<squad:squad>/add")
+def add_playlist(squad):
     # Add a playlist only if the user submitted the playlist info
     add_playlist_form = AddPlaylistForm()
     if add_playlist_form.validate_on_submit():
-        playlist_id = urlparse(add_playlist_form.playlist_link.data).path.split("/")[-1] # TODO: What happens when this fails? Is the DB modified?
+        # We don't care about playlist_id validity, or if it's even a url here
+        # We have no idea if a url is valid or not until it's time to compile the collab
+        playlist_id = urlparse(add_playlist_form.playlist_link.data).path.split("/")[-1]
         db.update_one(
-            {"squad_id": str(squad_id)},
+            {"squad_id": squad["squad_id"]},
             {
                 "$push": {
                     "playlists": {
@@ -193,14 +206,14 @@ def add_playlist(squad_id):
         )
 
     # Regardless of whether or not a playlist was added, redirect back to the squad page
-    return redirect(f"/squads/{squad_id}")
+    return redirect(f"/squads/{squad['squad_id']}")
 
 
 # Delete a playlist from an existing squad
-@app.get("/squads/<uuid:squad_id>/delete")
-def delete_playlist(squad_id):
+@app.get("/squads/<squad:squad>/delete")
+def delete_playlist(squad):
     db.update_one(
-        {"squad_id": str(squad_id)},
+        {"squad_id": squad["squad_id"]},
         {
             "$pull": {
                 "playlists": {
@@ -212,17 +225,13 @@ def delete_playlist(squad_id):
     )
 
     # Redirect to squad page
-    return redirect(f"/squads/{squad_id}")
+    return redirect(f"/squads/{squad['squad_id']}")
 
 
 # Create a collab and display a link to it
-@app.get("/squads/<uuid:squad_id>/finish")
+@app.get("/squads/<squad:squad>/finish")
 @authenticate(required=True)
-def finish_squad(squad_id, spotify_api):
-    squad = db.find_one({"squad_id": str(squad_id)})
-    if squad == None:
-        abort(404)
-
+def finish_squad(spotify_api, squad):
     playlists = [(playlist["user_name"], playlist["playlist_id"]) for playlist in squad["playlists"]]
     playlists = [Playlist(name, spotify_api.get_tracks(id)) for name, id in playlists]
     collab = CollabBuilder(playlists).build()
