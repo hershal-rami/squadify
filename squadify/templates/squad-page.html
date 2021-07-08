@@ -40,9 +40,8 @@
 
     <form method="POST" action="/squads/{{squad.squad_id}}/add"
         class="flex flex-col md:flex-row items-center space-y-2 space-x-4">
-        {{ add_playlist_form.hidden_tag() }}
+        {{ add_playlist_form.csrf_token }}
         {{ add_playlist_form.user_name(maxlength=40, class="button", placeholder="Your Name") }}
-        {{ add_playlist_form.hidden_tag() }}
         {{ add_playlist_form.playlist_link(maxlength=200, class="button", placeholder="Playlist Link") }}
         <input class="button max-w-max" type="submit" value="Add Your Playlist">
     </form>
