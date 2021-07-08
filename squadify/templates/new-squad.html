@@ -6,6 +6,6 @@
 <form method="POST" action="/squads/new" class="flex flex-col md:flex-row">
     {{ new_squad_form.hidden_tag() }}
     {{ new_squad_form.squad_name(maxlength=40, class="button flex-grow", placeholder="Squad Name") }}
-    <input type="submit" value="Create Squad" class="button mt-8 md:mt-0 md:ml-4 self-center">
+    <input type="submit" value="Create Squad" class="button mt-4 md:mt-0 md:ml-4 self-center">
 </form>
 {% endblock %}

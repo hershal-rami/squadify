@@ -2,7 +2,7 @@
   "name": "squadify",
   "version": "1.0.0",
   "scripts": {
-    "dev": "TAILWIND_MODE=watch postcss app.css -o ../squadify/static/app.css --watch",
+    "dev": "postcss app.css -o ../squadify/static/app.css --watch",
     "prod": "postcss app.css -o ../squadify/static/app.css"
   },
   "dependencies": {

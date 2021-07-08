@@ -167,10 +167,10 @@ def view_squad(spotify_api, signed_in, squad):
 def new_squad(spotify_api):
     new_squad_form = NewSquadForm()
     if not new_squad_form.validate_on_submit():
-        # Step 1: User pressed "Squad Up!" on the homepage to get here, so we ask them for a squad name
+        # Step 1: Ask user for a squad name
         return render_template("new-squad.html", signed_in=True, new_squad_form=new_squad_form)
     else:
-        # Step 2: User pressed "Create Squad" on /squads/new to get here, so we make a new squad and go to the page for that squad
+        # Step 2: User pressed "Create Squad", so we make a new squad and go to the squad page for it
         squad_id = str(uuid.uuid4())
         db.insert_one(
             dict(
