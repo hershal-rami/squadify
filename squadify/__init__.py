@@ -232,6 +232,10 @@ def delete_playlist(squad):
 @app.get("/squads/<squad:squad>/finish")
 @authenticate(required=True)
 def finish_squad(spotify_api, squad):
+    # Do nothing if the squad has no playlists
+    if len(squad["playlists"]) == 0:
+        return redirect(f"/squads/{squad['squad_id']}")
+
     playlists = [(playlist["user_name"], playlist["playlist_id"]) for playlist in squad["playlists"]]
     playlists = [Playlist(name, spotify_api.get_tracks(id)) for name, id in playlists]
     collab = CollabBuilder(playlists).build()
