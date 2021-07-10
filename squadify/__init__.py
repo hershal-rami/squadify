@@ -9,9 +9,9 @@ from squadify.make_collab import Playlist, CollabBuilder
 from squadify.spotify_api import SpotifyAPI
 from urllib.parse import urlparse
 from werkzeug.routing import BaseConverter
-from wtforms import StringField
+from wtforms import StringField, validators
+from wtforms.fields.html5 import URLField
 import os
-import spotipy
 import uuid
 
 
@@ -53,12 +53,12 @@ def spotify_cache_path():
 
 
 class NewSquadForm(FlaskForm):
-    squad_name = StringField()
+    squad_name = StringField(validators=[validators.length(max=40), validators.input_required()])
 
 
 class AddPlaylistForm(FlaskForm):
-    user_name = StringField()
-    playlist_link = StringField()
+    user_name = StringField(validators=[validators.length(max=40), validators.input_required()])
+    playlist_link = URLField(validators=[validators.length(max=200), validators.input_required()])
 
 
 # Apply to pages where Spotify login is either required or optional
