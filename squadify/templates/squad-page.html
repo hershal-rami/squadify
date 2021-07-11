@@ -21,8 +21,8 @@
                 class="flex items-center space-x-3 md:space-x-4 p-3 rounded-b-lg md:rounded-bl-none md:rounded-r-lg bg-gray-200 bg-opacity-70">
                 <iframe src="https://open.spotify.com/embed/playlist/{{playlist.playlist_id}}" class="rounded-md"
                     width="300" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
-                <a
-                    href="/squads/{{squad.squad_id}}/delete?playlist_id={{playlist.playlist_id}}&user_name={{playlist.user_name}}">
+                <a href="/squads/{{squad.squad_id}}/delete?playlist_id={{playlist.playlist_id}}&user_name={{playlist.user_name}}"
+                    onclick="return confirm('Delete this playlist?')">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-7" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.3"
