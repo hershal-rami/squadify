@@ -1,6 +1,7 @@
 import random
 from collections import Counter
 
+
 # Arbitrary max collab size we impose
 MAX_COLLAB_SIZE = 50
 

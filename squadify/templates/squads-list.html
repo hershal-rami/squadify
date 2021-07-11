@@ -11,7 +11,7 @@
             href="/squads/{{squad.squad_id}}">{{squad.squad_name}}</a>
         {% endfor %}
 
-        {% if squads_list_length == 0 %}
+        {% if squads_list|length == 0 %}
         <p class="card">Create a squad above!</p>
         {% endif %}
     </div>

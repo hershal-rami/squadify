@@ -1,6 +1,6 @@
 import math
-from squadify.make_collab import Track
-import spotipy
+from spotipy import Spotify
+from .make_collab import Track
 
 
 TRACK_PULL_LIMIT = 100  # Number of tracks the Spotify API lets you query at once
@@ -8,7 +8,7 @@ TRACK_PUSH_LIMIT = 20  # Number of tracks the Spotify API lets you add at once
 
 
 # Added functionality on top of the Spotipy module
-class SpotifyAPI(spotipy.Spotify):
+class SpotifyAPI(Spotify):
     
     # Return a list of all the tracks from a playlist
     def get_tracks(self, playlist_id):
@@ -33,29 +33,3 @@ class SpotifyAPI(spotipy.Spotify):
             tracks_subset = tracks[i : min(i + TRACK_PUSH_LIMIT, len(tracks))]
             self.user_playlist_add_tracks(user_id, collab_id, tracks_subset)
         return collab_id
-
-
-# Caches Spotify auth tokens in a MongoDB collection
-class MongoCacheHandler(spotipy.cache_handler.CacheHandler):
-
-    def __init__(self, collection, session_id):
-        self.collection = collection
-        self.session_id = session_id
-
-
-    def get_cached_token(self):
-        document = self.collection.find_one({"session_id": self.session_id})
-        return document["token_info"] if document else None
-
-
-    def save_token_to_cache(self, token_info):
-        self.collection.insert_one(
-            dict(
-                session_id=self.session_id,
-                token_info=token_info,
-            )
-        )
-
-
-    def delete_token_from_cache(self):
-        self.collection.delete_one({"session_id": self.session_id})
