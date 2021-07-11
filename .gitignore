@@ -1,7 +1,5 @@
 .cache
 .vscode
 **/__pycache__
-**/.flask_session
-**/.spotify_caches
 css/node_modules
 squadify/static/app.css

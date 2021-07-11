@@ -3,10 +3,9 @@ from flask_session import Session
 from flask_wtf import FlaskForm
 from functools import wraps
 from pymongo import MongoClient
-from spotipy.cache_handler import CacheFileHandler
 from spotipy.oauth2 import SpotifyOAuth
 from squadify.make_collab import Playlist, CollabBuilder
-from squadify.spotify_api import SpotifyAPI
+from squadify.spotify_api import SpotifyAPI, MongoCacheHandler
 from urllib.parse import urlparse
 from werkzeug.routing import BaseConverter
 from wtforms import StringField, validators
@@ -15,15 +14,20 @@ import os
 import uuid
 
 
+# Constants
+MONGO_DB_NAME = "squadify"
+
+
 # Connect to running MongoDB
 client = MongoClient("localhost", 27017)
-db = client["squads"]["squads"]
-
+db = client[MONGO_DB_NAME]
+squads_collection = db["squads"]
+spotify_token_collection = db["tokens"]
 
 # Fetches a squad from a squad_id, or returns a 404 if it doesn't exist
 class SquadConverter(BaseConverter):
     def to_python(self, squad_id):
-        squad = db.find_one({"squad_id": squad_id})
+        squad = squads_collection.find_one({"squad_id": squad_id})
         if squad == None:
             abort(404)
         return squad
@@ -37,19 +41,18 @@ app = Flask(__name__)
 app.url_map.converters["squad"] = SquadConverter
 
 app.config["SECRET_KEY"] = os.urandom(64)
-app.config["SESSION_TYPE"] = "filesystem"
-app.config["SESSION_FILE_DIR"] = "./.flask_session/"
+app.config["SESSION_TYPE"] = "mongodb"
+app.config["SESSION_MONGODB_DB"] = MONGO_DB_NAME
+
 Session(app)
 
-# Where Spotify auth tokens are stored
-caches_folder = "./.spotify_caches/"
-if not os.path.exists(caches_folder):
-    os.makedirs(caches_folder)
 
-
-# Get the path to this user's Spotify auth token
-def spotify_cache_path():
-    return caches_folder + session.get("uuid")
+# Get a CacheHandler that stores this user's Spotify auth token
+def spotify_cache_handler():
+    # Ensure the user has a Flask session ID
+    session["uuid"] = session["uuid"] or str(uuid.uuid4())
+    
+    return MongoCacheHandler(spotify_token_collection, session["uuid"])
 
 
 class NewSquadForm(FlaskForm):
@@ -67,11 +70,7 @@ def authenticate(required):
     def decorator(f):
         @wraps(f)
         def wrapper(*args, **kwargs):
-            # Ensure the user has a Flask session ID
-            if not session.get("uuid"):
-                session["uuid"] = str(uuid.uuid4())
-
-            cache_handler = CacheFileHandler(cache_path=spotify_cache_path())
+            cache_handler = spotify_cache_handler()
             auth_manager = SpotifyOAuth(cache_handler=cache_handler)
 
             if auth_manager.validate_token(cache_handler.get_cached_token()):
@@ -100,7 +99,7 @@ def authenticate(required):
 def sign_in():
     auth_manager = SpotifyOAuth(
         scope="playlist-modify-public", # Get permission to modify public playlists on behalf of the user
-        cache_handler=CacheFileHandler(cache_path=spotify_cache_path()),
+        cache_handler=spotify_cache_handler(),
         show_dialog=True,
         redirect_uri=os.getenv("SPOTIPY_REDIRECT_URI") + "/sign_in", # Have Spotify send us back here after signing in
         state=request.args.get("dest", request.referrer or "/") # After being sent back here, go to this url
@@ -118,12 +117,7 @@ def sign_in():
 # Signs out a user
 @app.get("/sign_out")
 def sign_out():
-    try:
-        # Remove the CACHE file (.cache-test) so that a new user can authorize.
-        os.remove(spotify_cache_path())
-        session.clear()
-    except OSError as e:
-        print("Error: %s - %s." % (e.filename, e.strerror))
+    spotify_cache_handler().delete_token_from_cache()
     return redirect("/")
 
 
@@ -142,8 +136,8 @@ def view_squads(spotify_api):
     return render_template(
         "squads-list.html",
         signed_in=True,
-        squads_list=db.find(query),
-        squads_list_length=db.count_documents(query),
+        squads_list=squads_collection.find(query),
+        squads_list_length=squads_collection.count_documents(query),
     )
 
 
@@ -172,7 +166,7 @@ def new_squad(spotify_api):
     else:
         # Step 2: User pressed "Create Squad", so we make a new squad and go to the squad page for it
         squad_id = str(uuid.uuid4())
-        db.insert_one(
+        squads_collection.insert_one(
             dict(
                 squad_id=squad_id,
                 squad_name=new_squad_form.squad_name.data,
@@ -193,7 +187,7 @@ def add_playlist(squad):
         # We don't care about playlist_id validity, or if it's even a url here
         # We have no idea if a url is valid or not until it's time to compile the collab
         playlist_id = urlparse(add_playlist_form.playlist_link.data).path.split("/")[-1]
-        db.update_one(
+        squads_collection.update_one(
             {"squad_id": squad["squad_id"]},
             {
                 "$push": {
@@ -212,7 +206,7 @@ def add_playlist(squad):
 # Delete a playlist from an existing squad
 @app.get("/squads/<squad:squad>/delete")
 def delete_playlist(squad):
-    db.update_one(
+    squads_collection.update_one(
         {"squad_id": squad["squad_id"]},
         {
             "$pull": {
