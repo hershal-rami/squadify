@@ -50,7 +50,7 @@ Session(app)
 # Get a CacheHandler that stores this user's Spotify auth token
 def spotify_cache_handler():
     # Ensure the user has a Flask session ID
-    session["uuid"] = session["uuid"] or str(uuid.uuid4())
+    session["uuid"] = session.get("uuid", str(uuid.uuid4()))
     
     return MongoCacheHandler(spotify_token_collection, session["uuid"])
 
