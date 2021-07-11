@@ -33,3 +33,11 @@ class SpotifyAPI(Spotify):
             tracks_subset = tracks[i : min(i + TRACK_PUSH_LIMIT, len(tracks))]
             self.user_playlist_add_tracks(user_id, collab_id, tracks_subset)
         return collab_id
+
+
+    def is_valid_playlist_id(self, playlist_id):
+        try:
+            self.playlist(playlist_id)
+            return True
+        except:
+            return False

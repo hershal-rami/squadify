@@ -12,7 +12,7 @@ from . import app, database
 
 # Apply to pages where it is either optional or required that the user be signed in
 # Routes with this wrapper must take the parameters "spotify_api", and if required=False, "signed_in"
-def check_sign_in(required):
+def authenticate(required):
     def decorator(f):
         @wraps(f)
         def wrapper(*args, **kwargs):
@@ -70,14 +70,14 @@ def sign_out():
 
 # Homepage
 @app.get("/")
-@check_sign_in(required=False)
+@authenticate(required=False)
 def homepage(spotify_api, signed_in):
     return render_template("index.html", signed_in=signed_in)
 
 
 # View list of user's squads
 @app.get("/squads")
-@check_sign_in(required=True)
+@authenticate(required=True)
 def view_squads(spotify_api):
     return render_template(
         "squads-list.html",
@@ -88,7 +88,7 @@ def view_squads(spotify_api):
 
 # View a specific squad
 @app.get("/squads/<squad:squad>")
-@check_sign_in(required=False)
+@authenticate(required=False)
 def view_squad(spotify_api, signed_in, squad):
     return render_template(
         "squad-page.html",
@@ -100,7 +100,7 @@ def view_squad(spotify_api, signed_in, squad):
 
 # Create a new squad
 @app.route("/squads/new", methods=["GET", "POST"])
-@check_sign_in(required=True)
+@authenticate(required=True)
 def new_squad(spotify_api):
     new_squad_form = NewSquadForm()
     if not new_squad_form.validate_on_submit():
@@ -114,14 +114,15 @@ def new_squad(spotify_api):
 
 
 # Add a playlist to an existing squad
+# Note: We know that playlist_link is a valid URL via form validation, but we
+# don't know if the playlist_id we get out of it points to a valid playlist
+# until it's time to compile the collab
 @app.post("/squads/<squad:squad>/add")
 def add_playlist(squad):
     add_playlist_form = AddPlaylistForm()
 
     # Add a playlist only if the user submitted the playlist info
     if add_playlist_form.validate_on_submit():
-        # We don't care about playlist_id validity, or if it's even a url here
-        # We have no idea if a url is valid or not until it's time to compile the collab
         playlist_id = urlparse(add_playlist_form.playlist_link.data).path.split("/")[-1]
         database.add_playlist_to_squad(squad["squad_id"], playlist_id, add_playlist_form.user_name.data)
 
@@ -140,14 +141,18 @@ def delete_playlist(squad):
 
 # Create a collab and display a link to it
 @app.get("/squads/<squad:squad>/finish")
-@check_sign_in(required=True)
+@authenticate(required=True)
 def finish_squad(spotify_api, squad):
-    # Do nothing if the squad has no playlists
-    if len(squad["playlists"]) == 0:
+    # Transform playlists list and filter out invalid playlist ids
+    playlists = [(playlist["user_name"], playlist["playlist_id"]) for playlist in squad["playlists"]]
+    playlists = filter(lambda playlist: spotify_api.is_valid_playlist_id(playlist[1]), playlists)
+    playlists = [Playlist(name, spotify_api.get_tracks(id)) for name, id in playlists]
+
+    # Do nothing if the squad has no valid playlists
+    if len(playlists) == 0:
         return redirect(f"/squads/{squad['squad_id']}")
 
-    playlists = [(playlist["user_name"], playlist["playlist_id"]) for playlist in squad["playlists"]]
-    playlists = [Playlist(name, spotify_api.get_tracks(id)) for name, id in playlists]
+    # Build collab
     collab = CollabBuilder(playlists).build()
     collab_id = spotify_api.publish_collab(collab, squad["squad_name"])
 
