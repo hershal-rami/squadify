@@ -3,7 +3,6 @@ from flask import session, abort
 from pymongo import MongoClient
 from spotipy.cache_handler import CacheHandler
 from werkzeug.routing import BaseConverter
-from . import db
 
 
 client = MongoClient("localhost", 27017)
