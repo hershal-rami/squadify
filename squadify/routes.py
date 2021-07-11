@@ -117,7 +117,7 @@ def new_squad(spotify_api):
 # Note: We know that playlist_link is a valid URL via form validation, but we
 # don't know if the playlist_id we get out of it points to a valid playlist
 # until it's time to compile the collab
-@app.post("/squads/<squad:squad>/add")
+@app.post("/squads/<squad:squad>/add_playlist")
 def add_playlist(squad):
     add_playlist_form = AddPlaylistForm()
 
@@ -131,7 +131,7 @@ def add_playlist(squad):
 
 
 # Delete a playlist from an existing squad
-@app.get("/squads/<squad:squad>/delete")
+@app.get("/squads/<squad:squad>/delete_playlist")
 def delete_playlist(squad):
     database.delete_playlist_from_squad(squad["squad_id"], request.args.get("playlist_id"), request.args.get("user_name"))
 
@@ -140,9 +140,9 @@ def delete_playlist(squad):
 
 
 # Create a collab and display a link to it
-@app.get("/squads/<squad:squad>/finish")
+@app.get("/squads/<squad:squad>/compile")
 @authenticate(required=True)
-def finish_squad(spotify_api, squad):
+def compile_squad(spotify_api, squad):
     # Transform playlists list and filter out invalid playlist ids
     playlists = [(playlist["user_name"], playlist["playlist_id"]) for playlist in squad["playlists"]]
     playlists = filter(lambda playlist: spotify_api.is_valid_playlist_id(playlist[1]), playlists)
@@ -157,7 +157,7 @@ def finish_squad(spotify_api, squad):
     collab_id = spotify_api.publish_collab(collab, squad["squad_name"])
 
     return render_template(
-        "finish-squad.html",
+        "compile-squad.html",
         signed_in=True,
         squad=squad,
         playlist_embed_id=collab_id,

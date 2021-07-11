@@ -7,7 +7,7 @@
     <div class="card flex flex-col items-center space-y-2 md:space-y-4">
         <p class="text-xl md:text-4xl font-bold">{{squad.squad_name}}</p>
         <p class="text-lg md:text-xl">Squad Leader: {{squad.leader_name}}</p>
-        <a class="button" href="/squads/{{squad.squad_id}}/finish">Compile Squad</a>
+        <a class="button" href="/squads/{{squad.squad_id}}/compile">Compile Squad</a>
     </div>
 
     <div class="flex flex-col space-y-2">
@@ -21,7 +21,7 @@
                 class="flex items-center space-x-3 md:space-x-4 p-3 rounded-b-lg md:rounded-bl-none md:rounded-r-lg bg-gray-200 bg-opacity-70">
                 <iframe src="https://open.spotify.com/embed/playlist/{{playlist.playlist_id}}" class="rounded-md"
                     width="300" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
-                <a href="/squads/{{squad.squad_id}}/delete?playlist_id={{playlist.playlist_id}}&user_name={{playlist.user_name}}"
+                <a href="/squads/{{squad.squad_id}}/delete_playlist?playlist_id={{playlist.playlist_id}}&user_name={{playlist.user_name}}"
                     onclick="return confirm('Delete this playlist?')">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-7" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor">
@@ -38,7 +38,7 @@
         {% endif %}
     </div>
 
-    <form method="POST" action="/squads/{{squad.squad_id}}/add"
+    <form method="POST" action="/squads/{{squad.squad_id}}/add_playlist"
         class="flex flex-col md:flex-row items-center space-y-2 space-x-4">
         {{ add_playlist_form.csrf_token }}
         {{ add_playlist_form.user_name(class="button", placeholder="Your Name") }}
