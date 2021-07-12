@@ -43,6 +43,7 @@
         {{ add_playlist_form.csrf_token }}
         {{ add_playlist_form.user_name(class="button", placeholder="Your Name") }}
         {{ add_playlist_form.playlist_link(class="button", placeholder="Playlist Link") }}
+        {{ add_playlist_form.use_liked_songs(class="checkbox") }}
         <input class="button max-w-max" type="submit" value="Add Your Playlist">
     </form>
 </div>

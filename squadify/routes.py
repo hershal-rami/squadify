@@ -17,7 +17,7 @@ def authenticate(required):
         @wraps(f)
         def wrapper(*args, **kwargs):
             cache_handler = database.spotify_cache_handler()
-            auth_manager = SpotifyOAuth(cache_handler=cache_handler)
+            auth_manager = SpotifyOAuth(cache_handler=cache_handler, scope="playlist-modify-public")
 
             if auth_manager.validate_token(cache_handler.get_cached_token()):
                 # User is not signed in
@@ -44,11 +44,11 @@ def authenticate(required):
 @app.get("/sign_in")
 def sign_in():
     auth_manager = SpotifyOAuth(
-        scope="playlist-modify-public", # Get permission to modify public playlists on behalf of the user
+        scope="playlist-modify-public,user-library-read",  # Edit public playlist and view user library
         cache_handler=database.spotify_cache_handler(),
         show_dialog=True,
-        redirect_uri=os.getenv("SPOTIPY_REDIRECT_URI") + "/sign_in", # Have Spotify send us back here after signing in
-        state=request.args.get("dest", request.referrer or "/") # After being sent back here, go to this url
+        redirect_uri=os.getenv("SPOTIPY_REDIRECT_URI") + "/sign_in",  # Have Spotify send us back here after signing in
+        state=request.args.get("dest", request.referrer or "/")  # After being sent back here, go to this url
     )
 
     if not request.args.get("code"):
@@ -114,20 +114,32 @@ def new_squad(spotify_api):
 
 
 # Add a playlist to an existing squad
-# Note: We know that playlist_link is a valid URL via form validation, but we
+# Note 1: We know that playlist_link is a valid URL via form validation, but we
 # don't know if the playlist_id we get out of it points to a valid playlist
 # until it's time to compile the collab
+# Note 2: A user can opt to add their liked songs as a playlist, but since
+# Spotify doesn't treat liked songs as a playlist, we must make a playlist on
+# their account and add their liked songs to that playlist
 @app.post("/squads/<squad:squad>/add_playlist")
-def add_playlist(squad):
+@authenticate(required=False)
+def add_playlist(spotify_api, signed_in, squad):
     add_playlist_form = AddPlaylistForm()
 
     # Add a playlist only if the user submitted the playlist info
     if add_playlist_form.validate_on_submit():
-        playlist_id = urlparse(add_playlist_form.playlist_link.data).path.split("/")[-1]
+        if add_playlist_form.use_liked_songs.data:
+            # Use liked songs
+            if not signed_in:
+                # Not allowed for logged out users, redirect back to squad page
+                return redirect(f"/squads/{squad['squad_id']}")
+            playlist_id = spotify_api.clone_liked_songs()
+        else:
+            # Use provided playlist link
+            playlist_id = urlparse(add_playlist_form.playlist_link.data).path.split("/")[-1]
         database.add_playlist_to_squad(squad["squad_id"], playlist_id, add_playlist_form.user_name.data)
 
     # Regardless of whether or not a playlist was added, redirect back to the squad page
-    return redirect(f"/squads/{squad['squad_id']}")
+    return redirect(f"/squads/{squad['squad_id']}")    
 
 
 # Delete a playlist from an existing squad
@@ -146,15 +158,15 @@ def compile_squad(spotify_api, squad):
     # Transform playlists list and filter out invalid playlist ids
     playlists = [(playlist["user_name"], playlist["playlist_id"]) for playlist in squad["playlists"]]
     playlists = filter(lambda playlist: spotify_api.is_valid_playlist_id(playlist[1]), playlists)
-    playlists = [Playlist(name, spotify_api.get_tracks(id)) for name, id in playlists]
+    playlists = [Playlist(name, spotify_api.get_playlist_tracks(id)) for name, id in playlists]
 
     # Do nothing if the squad has no valid playlists
     if len(playlists) == 0:
         return redirect(f"/squads/{squad['squad_id']}")
 
-    # Build collab
+    # Build a collaborative playlist from this squad
     collab = CollabBuilder(playlists).build()
-    collab_id = spotify_api.publish_collab(collab, squad["squad_name"])
+    collab_id = spotify_api.create_playlist_with_tracks(squad["squad_name"], collab)
 
     return render_template(
         "compile-squad.html",
