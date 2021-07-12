@@ -113,6 +113,16 @@ def new_squad(spotify_api):
         return redirect(f"/squads/{squad_id}")
 
 
+# Delete an existing squad
+@app.get("/squads/<squad:squad>/delete_squad")
+@authenticate(required=True)
+def delete_squad(spotify_api, squad):
+    # Only the squad leader is allowed to delete a squad
+    if spotify_api.me()["id"] == squad["leader_id"]:
+        database.delete_squad(squad)
+    return redirect(f"/squads")
+
+
 # Add a playlist to an existing squad
 # Note 1: We know that playlist_link is a valid URL via form validation, but we
 # don't know if the playlist_id we get out of it points to a valid playlist

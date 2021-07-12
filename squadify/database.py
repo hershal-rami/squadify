@@ -27,6 +27,10 @@ def insert_squad(squad_id, squad_name, spotify_api):
     )
 
 
+def delete_squad(squad):
+    squads_collection.delete_one({"squad_id": squad["squad_id"]})
+
+
 def add_playlist_to_squad(squad_id, playlist_id, user_name):
     squads_collection.update_one(
         {"squad_id": squad_id},
