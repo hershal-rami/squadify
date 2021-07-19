@@ -12,6 +12,6 @@
     }
 
     .card {
-        @apply bg-gray-200 bg-opacity-90 px-12 md:px-48 py-2 md:py-5 rounded-lg shadow-md;
+        @apply bg-gray-200 bg-opacity-90 p-3 py-4 w-2/4 md:w-2/6 rounded-lg shadow-md;
     }
 }

@@ -1,0 +1,6 @@
+Cards, buttons, etc should not rely on padding for size
+    Test a variety of content length and screen sizes
+Redo squad page design - Two column layout on desktop
+    Should have a message about sharing this link
+Brown buttons instead of black where appropriate
+Fix weird shadow clipping issues with rounded corners on cards

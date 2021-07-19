@@ -23,11 +23,7 @@
                     width="300" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
                 <a href="/squads/{{squad.squad_id}}/delete_playlist?playlist_id={{playlist.playlist_id}}&user_name={{playlist.user_name}}"
                     onclick="return confirm('Delete this playlist?')">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-7" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.3"
-                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
+                    {% include "components/delete-icon.html" %}
                 </a>
             </div>
         </div>
@@ -44,7 +40,7 @@
         {{ add_playlist_form.user_name(class="button", placeholder="Your Name") }}
         {{ add_playlist_form.playlist_link(class="button", placeholder="Playlist Link") }}
         {{ add_playlist_form.use_liked_songs(class="checkbox") }}
-        <input class="button max-w-max" type="submit" value="Add Your Playlist">
+        <input class="button max-w-max" type="submit" value="Add Playlist">
     </form>
 </div>
 {% endblock %}
