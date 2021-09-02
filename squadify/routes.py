@@ -149,7 +149,7 @@ def add_playlist(spotify_api, signed_in, squad):
         database.add_playlist_to_squad(squad["squad_id"], playlist_id, add_playlist_form.user_name.data)
 
     # Regardless of whether or not a playlist was added, redirect back to the squad page
-    return redirect(f"/squads/{squad['squad_id']}")    
+    return redirect(f"/squads/{squad['squad_id']}")
 
 
 # Delete a playlist from an existing squad

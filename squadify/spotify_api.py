@@ -1,4 +1,3 @@
-import math
 from spotipy import Spotify
 from .make_collab import Track
 
@@ -11,7 +10,7 @@ LIKED_SONGS_PLAYLIST_NAME = "User's Liked Songs"
 
 # Added functionality on top of the Spotipy module
 class SpotifyAPI(Spotify):
-    
+
     # Return a list of all the tracks from a playlist
     def get_playlist_tracks(self, playlist_id):
         return self.__pull_tracks(self.playlist_items(playlist_id, limit=TRACK_PULL_LIMIT))
@@ -39,8 +38,8 @@ class SpotifyAPI(Spotify):
         while result["next"]:
             result = self.next(result)
             items.extend(result["items"])
-        
-        # Transform items into tracks and filter out ones with missing data 
+
+        # Transform items into tracks and filter out ones with missing data
         items = filter(lambda item: item["track"] and item["track"]["id"], items)
         tracks = [Track(item["track"]) for item in items]
 
@@ -53,7 +52,7 @@ class SpotifyAPI(Spotify):
         for i in range(0, len(track_ids), TRACK_PUSH_LIMIT):
             track_ids_sublist = track_ids[i : min(i + TRACK_PUSH_LIMIT, len(track_ids))]
             self.playlist_add_items(playlist_id, track_ids_sublist)
-    
+
 
     # Add a new playlist with the given name to this user's account
     def __create_playlist(self, playlist_name):
