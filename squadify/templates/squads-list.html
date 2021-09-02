@@ -7,13 +7,17 @@
     <a class="button mb-4 md:mb-8" href="/squads/new">New Squad</a>
     <div class="w-full flex flex-col items-center space-y-2 md:space-y-4">
         {% for squad in squads_list %}
-        <a class="card text-center text-lg md:text-2xl font-medium text-gray-800"
-            href="/squads/{{squad.squad_id}}">{{squad.squad_name}}</a>
-        <!-- <div class="flex shadow-md">
-            <a href="/squads/{{squad.squad_id}}/delete_squad" onclick="return confirm('Delete this squad?')">
-                {% include "components/delete-icon.html" %}
+        <div class="flex shadow-md">
+            <a class="flex items-center md:text-2xl font-medium text-gray-800 p-2
+                md:px-8 md:py-4 rounded-l-lg bg-gray-200 bg-opacity-90" href="/squads/{{squad.squad_id}}">
+                {{squad.squad_name}}
             </a>
-        </div> -->
+            <div class="flex items-center space-x-2 p-3 rounded-r-lg bg-gray-200 bg-opacity-70">
+                <a href="/squads/{{squad.squad_id}}/delete_squad" onclick="return confirm('Delete this squad?')">
+                    {% include "components/delete-icon.html" %}
+                </a>
+            </div>
+        </div>
         {% endfor %}
 
         {% if squads_list|length == 0 %}

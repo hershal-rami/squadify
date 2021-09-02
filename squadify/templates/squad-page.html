@@ -13,12 +13,12 @@
     <div class="flex flex-col space-y-2">
         {% for playlist in squad.playlists %}
         <div class="flex flex-col md:flex-row shadow-md">
-            <div
+            <p
                 class="md:flex-grow flex md:items-center justify-center md:text-xl p-1 md:px-4 md:py-0 rounded-t-lg md:rounded-t-none md:rounded-l-lg bg-gray-200 bg-opacity-90">
-                <p>{{playlist.user_name}}</p>
-            </div>
+                {{playlist.user_name}}
+            </p>
             <div
-                class="flex items-center space-x-3 md:space-x-4 p-3 rounded-b-lg md:rounded-bl-none md:rounded-r-lg bg-gray-200 bg-opacity-70">
+                class="flex items-center space-x-2 p-3 rounded-b-lg md:rounded-bl-none md:rounded-r-lg bg-gray-200 bg-opacity-70">
                 <iframe src="https://open.spotify.com/embed/playlist/{{playlist.playlist_id}}" class="rounded-md"
                     width="300" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
                 <a href="/squads/{{squad.squad_id}}/delete_playlist?playlist_id={{playlist.playlist_id}}&user_name={{playlist.user_name}}"
@@ -38,8 +38,26 @@
         class="flex flex-col md:flex-row items-center space-y-2 space-x-4">
         {{ add_playlist_form.csrf_token }}
         {{ add_playlist_form.user_name(class="button", placeholder="Your Name") }}
-        {{ add_playlist_form.playlist_link(class="button", placeholder="Playlist Link") }}
-        {{ add_playlist_form.use_liked_songs(class="checkbox") }}
+        {{ add_playlist_form.playlist_link(id="playlist_link", class="button", placeholder="Playlist Link") }}
+        <div
+            class="flex items-center space-x-4 px-3 md:px-6 py-3 rounded-md text-sm md:text-lg font-medium text-gray-200 bg-gray-800 bg-opacity-80">
+            <p>Liked Songs</p>
+            <label>
+                <script>
+                    function togglePlaylistLink() {
+                        var el = document.getElementById("playlist_link");
+                        if (el.style.display == "" || el.style.display == "block") {
+                            el.style.display = "none";
+                        } else {
+                            el.style.display = "block";
+                        }
+                    }
+                </script>
+                {{ add_playlist_form.use_liked_songs(class="absolute w-0 h-0 opacity-0",
+                onchange="togglePlaylistLink()") }}
+                {% include "components/heart-icon.html" %}
+            </label>
+        </div>
         <input class="button max-w-max" type="submit" value="Add Playlist">
     </form>
 </div>

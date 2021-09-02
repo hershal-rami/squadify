@@ -14,4 +14,11 @@
     .card {
         @apply bg-gray-200 bg-opacity-90 p-3 py-4 w-2/4 md:w-2/6 rounded-lg shadow-md;
     }
+
+    input[type=checkbox] + svg {
+        @apply text-pink-400;
+    }
+    input[type=checkbox]:checked + svg {
+        @apply text-white;
+    }
 }
