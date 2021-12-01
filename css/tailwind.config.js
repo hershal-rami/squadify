@@ -13,6 +13,9 @@ module.exports = {
                 green: colors.green,
             }
         },
+        fontFamily: {
+            "sans": "Inter"
+        }
     },
     variants: {},
     plugins: [
