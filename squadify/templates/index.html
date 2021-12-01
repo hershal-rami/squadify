@@ -20,10 +20,10 @@
             </a>
             <div class="flex items-center space-x-2 md:space-x-4">
                 {% if signed_in %}
-                <a class="nav-button" href="/squads">Squads</a>
-                <a class="nav-button" href="/sign_out">Sign Out</a>
+                <a class="widget bg-opacity-100 font-medium" href="/squads">Squads</a>
+                <a class="widget bg-opacity-100 font-medium" href="/sign_out">Sign Out</a>
                 {% else %}
-                <a class="nav-button" href="/sign_in">Sign In</a>
+                <a class="widget bg-opacity-100 font-medium" href="/sign_in">Sign In</a>
                 {% endif %}
                 <a href="https://github.com/hershal-rami/squadify" target="_blank">
                     {% include "components/github-logo.html" %}
@@ -35,14 +35,14 @@
     <!-- Content -->
     <div class="flex-grow p-4 flex flex-col container mx-auto mt-4 md:mt-8">
         {% block content %}
-        <div class="m-auto flex flex-col items-center space-y-8 text-gray-800">
+        <div class="m-auto flex flex-col items-center space-y-8 md:space-y-12 text-gray-800">
             {% include "components/illustration.html" %}
             <div class="flex flex-col space-y-4 font-bold text-center">
                 <p class="text-2xl md:text-4xl">Can't agree on what to listen to?</p>
                 <p class="md:text-2xl">Never argue over who gets the aux again!</p>
             </div>
-            <a class="button px-12 py-4 md:px-20" {% if signed_in %} href="/squads/new" {% else %}
-                href="/sign_in?dest=%2Fsquads%2Fnew" {% endif %}>Squad Up</a>
+            <a class="widget px-4 md:px-7 py-3 md:py-4 text-lg md:text-2xl" {% if signed_in %} href="/squads/new" {%
+                else %} href="/sign_in?dest=%2Fsquads%2Fnew" {%endif %}>Squad Up</a>
         </div>
         {% endblock %}
     </div>

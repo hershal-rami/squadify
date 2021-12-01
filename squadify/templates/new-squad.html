@@ -3,9 +3,9 @@
 {% block title %}New Squad - Squadify{% endblock %}
 
 {% block content %}
-<form method="POST" action="/squads/new" class="flex flex-col md:flex-row">
+<form method="POST" action="/squads/new" class="card m-auto md:my-0 flex flex-col md:flex-row">
     {{ new_squad_form.csrf_token }}
-    {{ new_squad_form.squad_name(class="button flex-grow", placeholder="Squad Name") }}
-    <input type="submit" value="Create Squad" class="button mt-4 md:mt-0 md:ml-4 self-center">
+    {{ new_squad_form.squad_name(class="widget flex-grow", placeholder="Squad Name") }}
+    <input type="submit" value="Create Squad" class="widget mt-4 md:mt-0 md:ml-4 self-center">
 </form>
 {% endblock %}

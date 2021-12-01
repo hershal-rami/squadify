@@ -4,11 +4,11 @@
 
 {% block content %}
 <div class="flex flex-col items-center">
-    <a class="button mb-4 md:mb-8" href="/squads/new">New Squad</a>
-    <div class="w-full flex flex-col items-center space-y-2 md:space-y-4">
+    <a class="widget mb-4 md:mb-8" href="/squads/new">New Squad</a>
+    <div class="flex flex-col space-y-2 md:space-y-4">
         {% for squad in squads_list %}
-        <div class="flex shadow-md">
-            <a class="flex items-center md:text-2xl font-medium text-gray-800 p-2
+        <div class="flex shadow-md rounded-lg">
+            <a class="flex-grow flex items-center md:text-2xl font-medium text-gray-800 px-4 py-2
                 md:px-8 md:py-4 rounded-l-lg bg-gray-200 bg-opacity-90" href="/squads/{{squad.squad_id}}">
                 {{squad.squad_name}}
             </a>

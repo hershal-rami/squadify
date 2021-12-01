@@ -3,22 +3,22 @@
 @tailwind utilities;
 
 @layer components {
-    .nav-button {
-        @apply px-3 md:px-6 py-2 md:py-3 rounded-md text-sm md:text-lg font-medium text-gray-200 bg-gray-800 hover:bg-gray-900 transition-colors;
-    }
-
-    .button {
-        @apply px-3 md:px-6 py-3 rounded-md text-sm md:text-lg font-medium text-gray-200 bg-gray-800 hover:bg-gray-900 bg-opacity-80 transition-colors;
+    .widget {
+        @apply
+        px-3 md:px-6 py-2 md:py-3 rounded-md
+        text-sm md:text-lg font-bold text-gray-200 placeholder-gray-400 placeholder-opacity-80
+        bg-gray-800 hover:bg-gray-900 bg-opacity-80 transition-colors
+        focus:outline-none focus:ring focus:ring-gray-500 focus:ring-opacity-60;
     }
 
     .card {
-        @apply bg-gray-200 bg-opacity-90 p-3 py-4 w-2/4 md:w-2/6 rounded-lg shadow-md;
+        @apply px-8 py-6 rounded-lg bg-gray-200 bg-opacity-90 shadow-md;
     }
 
     input[type=checkbox] + svg {
-        @apply text-pink-400;
+        @apply text-white;
     }
     input[type=checkbox]:checked + svg {
-        @apply text-white;
+        @apply text-pink-400;
     }
 }
