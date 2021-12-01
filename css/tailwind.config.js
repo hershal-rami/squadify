@@ -3,7 +3,7 @@ const colors = require("tailwindcss/colors");
 module.exports = {
     mode: "jit",
     purge: [
-        "../squadify/templates/*.html"
+        "../squadify/templates/**/*.html"
     ],
     darkMode: false,
     theme: {

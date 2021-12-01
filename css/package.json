@@ -2,15 +2,14 @@
   "name": "squadify",
   "version": "1.0.0",
   "scripts": {
-    "dev": "postcss app.css -o ../squadify/static/app.css --watch",
-    "prod": "postcss app.css -o ../squadify/static/app.css"
+    "dev": "tailwindcss --input=app.css --output=../squadify/static/app.css --postcss --watch",
+    "prod": "NODE_ENV=production tailwindcss --input=app.css --output=../squadify/static/app.css --postcss --minify"
   },
   "dependencies": {
     "@tailwindcss/forms": "0.3.x",
-    "autoprefixer": "10.2.x",
-    "cssnano": "5.0.x",
-    "postcss": "8.3.x",
-    "postcss-cli": "8.3.x",
+    "autoprefixer": "10.4.x",
+    "postcss": "8.4.x",
+    "postcss-cli": "9.0.x",
     "tailwindcss": "2.2.x"
   }
 }
