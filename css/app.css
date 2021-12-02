@@ -7,7 +7,7 @@
         @apply
         px-3 md:px-6 py-2 md:py-3 rounded-md
         text-sm md:text-lg font-bold text-gray-200 placeholder-gray-400 placeholder-opacity-80
-        bg-gray-800 hover:bg-gray-900 bg-opacity-80 transition-colors
+        bg-gray-800 hover:bg-gray-900 transition-colors
         focus:outline-none focus:ring focus:ring-gray-500 focus:ring-opacity-60;
     }
 
@@ -17,6 +17,9 @@
 
     input[type=checkbox] + svg {
         @apply text-white;
+    }
+    input[type=checkbox]:hover + svg {
+        @apply text-pink-300;
     }
     input[type=checkbox]:checked + svg {
         @apply text-pink-400;

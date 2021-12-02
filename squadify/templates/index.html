@@ -11,35 +11,34 @@
     <link rel="icon" type="image/svg+xml" href="{{url_for('static', filename='favicon.svg')}}" />
 </head>
 
-<body class="flex flex-col h-screen bg-green-300">
+<body class="h-screen container p-4 mx-auto flex flex-col bg-green-200">
     <!-- Header -->
-    <div class="p-4 bg-gray-800 bg-opacity-80 shadow-md md:shadow-lg">
-        <div class="container mx-auto flex items-center justify-between">
-            <a href="/">
-                <img class="h-8 md:h-12" src="{{url_for('static', filename='logo.svg')}}">
+    <div class="w-full mx-auto flex justify-between">
+        <a class="transform transition-transform hover:scale-110" href="/">
+            <img class="h-8 md:h-12" src="{{url_for('static', filename='logo.svg')}}">
+        </a>
+        <div class="flex items-center space-x-6 md:space-x-12 text-sm md:text-xl font-medium text-gray-900">
+            {% if signed_in %}
+            <a class="hover:underline" href="/squads">Squads</a>
+            <a class="hover:underline" href="/sign_out">Sign Out</a>
+            {% else %}
+            <a class="hover:underline" href="/sign_in">Sign In</a>
+            {% endif %}
+            <a class="transform transition-transform hover:scale-125" href="https://github.com/hershal-rami/squadify"
+                target="_blank">
+                {% include "components/github-logo.html" %}
             </a>
-            <div class="flex items-center space-x-2 md:space-x-4">
-                {% if signed_in %}
-                <a class="widget bg-opacity-100 font-medium" href="/squads">Squads</a>
-                <a class="widget bg-opacity-100 font-medium" href="/sign_out">Sign Out</a>
-                {% else %}
-                <a class="widget bg-opacity-100 font-medium" href="/sign_in">Sign In</a>
-                {% endif %}
-                <a href="https://github.com/hershal-rami/squadify" target="_blank">
-                    {% include "components/github-logo.html" %}
-                </a>
-            </div>
         </div>
     </div>
 
     <!-- Content -->
-    <div class="flex-grow p-4 flex flex-col container mx-auto mt-4 md:mt-8">
+    <div class="mt-8 flex-grow flex flex-col justify-center md:justify-start">
         {% block content %}
-        <div class="m-auto flex flex-col items-center space-y-8 md:space-y-12 text-gray-800">
+        <div class="mt-4 flex flex-col items-center space-y-12 md:space-y-16">
             {% include "components/illustration.html" %}
-            <div class="flex flex-col space-y-4 font-bold text-center">
-                <p class="text-2xl md:text-4xl">Can't agree on what to listen to?</p>
-                <p class="md:text-2xl">Never argue over who gets the aux again!</p>
+            <div class="flex flex-col space-y-6 font-bold md:text-center mx-4">
+                <p class="text-gray-800 text-3xl md:text-5xl">Can't agree on what to listen to?</p>
+                <p class="text-green-900 font-normal text-xl md:text-3xl">Never argue over who gets the aux again!</p>
             </div>
             <a class="widget px-4 md:px-7 py-3 md:py-4 text-lg md:text-2xl" {% if signed_in %} href="/squads/new" {%
                 else %} href="/sign_in?dest=%2Fsquads%2Fnew" {%endif %}>Squad Up</a>

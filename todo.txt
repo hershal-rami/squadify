@@ -1,0 +1,6 @@
+Redo new squad page
+Redo squad list page
+Redo squad page
+Redo compiled squad page
+Add hover effect to trashcan
+Reloading page while liked songs is checked breaks styling
