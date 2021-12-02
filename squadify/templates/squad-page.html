@@ -30,7 +30,10 @@
         {% endfor %}
 
         {% if squad.playlists|length == 0 %}
-        <p class="card">Add playlists below!</p>
+        <div class="card flex flex-col space-y-2">
+            <p>Add playlists below!</p>
+            <p>Share this link with your friends!</p>
+        </div>
         {% endif %}
     </div>
 
