@@ -39,25 +39,22 @@
         {{ add_playlist_form.csrf_token }}
         {{ add_playlist_form.user_name(class="widget", placeholder="Your Name") }}
         {{ add_playlist_form.playlist_link(id="playlist_link", class="widget", placeholder="Playlist Link") }}
-        <div
-            class="flex items-center space-x-4 px-3 md:px-6 py-3 rounded-md text-sm md:text-lg font-medium text-gray-200 bg-gray-800 bg-opacity-80">
-            <p>Liked Songs</p>
-            <label>
-                <script>
-                    function togglePlaylistLink() {
-                        var el = document.getElementById("playlist_link");
-                        if (el.style.display == "" || el.style.display == "block") {
-                            el.style.display = "none";
-                        } else {
-                            el.style.display = "block";
-                        }
+        <label class="widget flex items-center space-x-2 md:space-x-0" for="use_liked_songs">
+            Liked Songs
+            {{ add_playlist_form.use_liked_songs(class="absolute w-0 h-0 opacity-0",
+            onchange="togglePlaylistLink()") }}
+            {% include "components/heart-icon.html" %}
+            <script>
+                function togglePlaylistLink() {
+                    var el = document.getElementById("playlist_link");
+                    if (el.style.display == "" || el.style.display == "block") {
+                        el.style.display = "none";
+                    } else {
+                        el.style.display = "block";
                     }
-                </script>
-                {{ add_playlist_form.use_liked_songs(class="absolute w-0 h-0 opacity-0",
-                onchange="togglePlaylistLink()") }}
-                {% include "components/heart-icon.html" %}
-            </label>
-        </div>
+                }
+            </script>
+        </label>
         <input class="widget max-w-max" type="submit" value="Add Playlist">
     </form>
 </div>
