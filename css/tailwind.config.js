@@ -11,11 +11,11 @@ module.exports = {
             colors: {
                 gray: colors.gray,
                 green: colors.green,
+            },
+            fontFamily: {
+                "sans": "Inter"
             }
         },
-        fontFamily: {
-            "sans": "Inter"
-        }
     },
     variants: {},
     plugins: [

@@ -32,13 +32,14 @@
     </div>
 
     <!-- Content -->
-    <div class="mt-8 flex-grow flex flex-col justify-center md:justify-start">
+    <div class="flex-grow mt-8 flex flex-col justify-center md:justify-start">
         {% block content %}
-        <div class="mt-4 flex flex-col items-center space-y-12 md:space-y-16">
-            {% include "components/illustration.html" %}
+        <div class="md:mt-4 flex flex-col items-center space-y-12 md:space-y-16">
+            {% include "components/home-image.html" %}
             <div class="flex flex-col space-y-6 font-bold md:text-center mx-4">
                 <p class="text-gray-800 text-3xl md:text-5xl">Can't agree on what to listen to?</p>
-                <p class="text-green-900 font-normal text-xl md:text-3xl">Never argue over who gets the aux again!</p>
+                <p class="text-green-900 font-normal text-xl md:text-3xl tracking-wide">Never argue over who gets the
+                    aux again!</p>
             </div>
             <a class="widget px-4 md:px-7 py-3 md:py-4 text-lg md:text-2xl" {% if signed_in %} href="/squads/new" {%
                 else %} href="/sign_in?dest=%2Fsquads%2Fnew" {%endif %}>Squad Up</a>

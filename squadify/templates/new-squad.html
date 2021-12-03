@@ -3,9 +3,16 @@
 {% block title %}New Squad - Squadify{% endblock %}
 
 {% block content %}
-<form method="POST" action="/squads/new" class="card m-auto md:my-0 flex flex-col md:flex-row">
-    {{ new_squad_form.csrf_token }}
-    {{ new_squad_form.squad_name(class="widget flex-grow", placeholder="Squad Name") }}
-    <input type="submit" value="Create Squad" class="widget mt-4 md:mt-0 md:ml-4 self-center">
-</form>
+<div class="card md:w-2/3 md:mx-auto flex flex-col md:flex-row md:items-center space-y-4 md:space-y-0 md:space-x-16">
+    <p class="md:hidden mx-auto font-bold tracking-wider text-gray-800 text-4xl">New Squad</p>
+    {% include "components/squad-image.html" %}
+    <div class="md:h-full md:py-4 flex flex-col md:space-y-16">
+        <p class="hidden md:inline-block font-bold tracking-wide text-gray-800 text-5xl">New Squad</p>
+        <form method="POST" action="/squads/new" class="flex flex-col space-y-2 md:space-y-4">
+            {{ new_squad_form.csrf_token }}
+            {{ new_squad_form.squad_name(class="widget", placeholder="Squad Name") }}
+            <input type="submit" value="Create Squad" class="widget self-center md:self-start">
+        </form>
+    </div>
+</div>
 {% endblock %}
