@@ -3,10 +3,10 @@
 {% block title %}New Squad - Squadify{% endblock %}
 
 {% block content %}
-<div class="card md:w-2/3 md:mx-auto flex flex-col md:flex-row md:items-center space-y-4 md:space-y-0 md:space-x-16">
+<div class="card md:w-2/3 md:mx-auto flex flex-col md:flex-row md:items-center space-y-4 md:space-y-0">
     <p class="md:hidden mx-auto font-bold tracking-wider text-gray-800 text-4xl">New Squad</p>
     {% include "components/squad-image.html" %}
-    <div class="md:h-full md:py-4 flex flex-col md:space-y-16">
+    <div class="md:ml-16 md:flex-grow md:py-4 flex flex-col md:space-y-16">
         <p class="hidden md:inline-block font-bold tracking-wide text-gray-800 text-5xl">New Squad</p>
         <form method="POST" action="/squads/new" class="flex flex-col space-y-2 md:space-y-4">
             {{ new_squad_form.csrf_token }}
