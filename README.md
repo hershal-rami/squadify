@@ -11,7 +11,7 @@ PARTY TIME!!!
 7. `FLASK_ENV=development FLASK_APP=squadify flask run`
 
 ## Running In Production
-1. Run MongoDB with a database and collection named `squads`
+1. Run MongoDB with a database called `squadify` containing two collections named `squads` and `tokens`
 2. `poetry install`
 3. In `css`, run `npm install && npm run prod`
 4. In the Spotify dashboard, get the client ID and secret, and set the redirect URI
