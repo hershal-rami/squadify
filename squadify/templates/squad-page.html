@@ -42,6 +42,7 @@
         {{ add_playlist_form.csrf_token }}
         {{ add_playlist_form.user_name(class="widget", placeholder="Your Name") }}
         {{ add_playlist_form.playlist_link(id="playlist_link", class="widget", placeholder="Playlist Link") }}
+        {% if signed_in %}
         <label class="widget flex items-center space-x-2 md:space-x-0" for="use_liked_songs">
             Liked Songs
             {{ add_playlist_form.use_liked_songs(class="absolute w-0 h-0 opacity-0",
@@ -58,6 +59,7 @@
                 }
             </script>
         </label>
+        {% endif %}
         <input class="widget max-w-max" type="submit" value="Add Playlist">
     </form>
 </div>
