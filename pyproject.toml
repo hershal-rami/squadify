@@ -9,7 +9,7 @@ python = "^3.6"
 spotipy = "^2.18.0"
 pymongo = "^3.11.4"
 flask = "^2.0.3"
-flask_wtf = "^0.15.1"
+flask_wtf = "^1.0.1"
 Flask-Session = "^0.4.0"
 wtforms = "^2.3.3"
 
