@@ -6,7 +6,7 @@ authors = []
 
 [tool.poetry.dependencies]
 python = "^3.6"
-spotipy = "^2.18.0"
+spotipy = "^2.22.0"
 pymongo = "^3.11.4"
 flask = "^2.0.3"
 flask_wtf = "^0.15.1"
