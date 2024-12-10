@@ -11,7 +11,7 @@ pymongo = "^3.11.4"
 flask = "^2.0.3"
 flask_wtf = "^0.15.1"
 Flask-Session = "^0.4.0"
-wtforms = "^2.3.3"
+wtforms = "^3.0.0"
 
 [tool.poetry.dev-dependencies]
 gunicorn = "^20.1.0"
